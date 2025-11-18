@@ -36,7 +36,6 @@ library(psych)
 library(flextable)
 # define not in
 `%nin%` <- Negate(`%in%`)
-
 ```
 
 ## Data Acquisition
@@ -514,6 +513,8 @@ ginigdp |>
   theme_booktabs() |> 
   delete_part("footer")
 ```
+
+
 
 ```{r}
 #| label: tbl-ginigdp-HR
