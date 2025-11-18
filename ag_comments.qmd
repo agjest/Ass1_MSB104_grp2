@@ -1,0 +1,55 @@
+---
+title: "ag_comments"
+format: html
+editor: visual
+---
+
+-   Har lagt inn en `lst-label:` som gir caption (via `#|lst-cap`) for code-chunks.
+-   Dere burde nevnt at dataene er fra tabellen `nama_10r_3gdp`
+-   Populasjonsdataene er fra tabellen `demo_r_pjanaggr3`
+-   Jeg foreslår å bytte fra raw_econ til gdp_wide. Sier mer om dataene.
+-   Long varianten (tidy varianten) kan da kalles gdp.
+-   Endrer litt på range og bruke samme triks som for gdp for å få lest inn data.
+-   Foreslår å endre navn til pop_wide for populasjonsdata
+-   Endret fra fig-cap til tbl-cap i cunken med label tbl-tidyjoined. Reglene er at for figure må label starte med fig- og for table må den starte med tbl-. Så kan en ha hhv. fig-cap for figure og tbl-cap for table. Merk imidlertid lst-label og lst-cap hvis en vil ha kryssreferanse til codechunks (her kan en også ha en label i tillegg på chunken for å få navn på den chunken der en eventuell feil er). Ikke bruke underscore (\_) eller andre skilletegn i label. Gir trøbbel.
+-   Har definert `%nin%` for 'not in'. Denne finnes ikke i `tidyverse`, men er lett å definere og grei å ha tilgjengelig.
+-   Funksjonen `psych::describeBy()` gir masse deskreptiv statistikk mer er kanskje ikke så lett å presentere i et paper. Jeg har kastet i sammen en funksjon `descby()` som prøver å gjøre dette.
+    -   Fint eksempel på en ad-hoc R funksjon og også et fint eksempel på både `pivot_longer` og så `pivot_wider`.
+-   Diskusjon mht. beskrivende statistikk: Se litt på forskjellen mellom mean og median for GDP_per_capita og også min og max for denne variabelen for de fire landene. Hva kan en konludere med?
+-   Liker at dere regner ut antall NUTS3 regioner i hver NUTS2 region. Dette er en viktig størrelse. Et spørmål er hvordan den effektivt kan kommuniseres. Se mitt forslag med å legge den inn i header (også et fint eksempel på bruke av `unite()`)
+-   Forsøket deres på å lage en flextable av samtlige NUTS3 regioner ble heldigvis stoppet av as_flextables max_row = 10 default ;-) Se mitt forslag om å rapportere utviklingen for NUTS2 regioner i CH, HR og IE. Siden Tyskland har så mange foreslår jeg å rapportere for en NUTS1 region (Bavaria).
+-   Plot for Sveits er ok, men vurder:
+    -   Har punktene noen informasjonsverdi
+    -   Hva med regionene CH04 og CH07 som bare har 1 NUTS3 region
+    -   Jeg vil anbefale å bruke quarto caption. Da blir ggplot `labs()` smør på flesk.
+    -   Se mitt forslag til endring i fig-Switzerland-ag. Har lagt på linetype som egenskap siden mitt fargesyn er under par.
+    -   Hvis dere liker endringene kan dere jo også implementere dem for de andre landene.
+-   fig-Germany
+    -   Klarer noen å se forskjell på alle disse linjene?
+    -   Her lurt å gjøre Time om fra integer til et date objekt (year)
+    -   Kanskje lurt å heller la farge kode for NUTS1 nivå
+    -   Har også latt linetype kode for NUTS1
+    -   Her får vi et lite problem siden 14 NUTS1 regioner i Tyskland, men bare 13 ulike linjetyper i ggplot.
+    -   Har løst problemt med å dele opp i to datasett der DE1 blir behandlet for seg.
+    -   Har også vist et alternativ der bare farge angir NUTS1 med viridis fargepalett (skal ha god kontrast mellom fargene). Personlig synes jeg også denne blir for uryddig.
+    -   En løsning er kanskje å splitte dette opp i to plot. Et for NUTS1 regioner med flere NUTS2 regioner og et for NUTS1 med bare 1 NUTS2 region.
+    -   Også her kunne det være en ide å kombinere NUTS1 og count for å angi hvor mange soner det er i hver (men da må antall NUTS2 soner beregns Count angir antall NUTS3 i hver NUTS2 sone).
+-   Merk at `#|fig-cap:` istedenfor `#| fig-cap:` er nok til at caption for figuren ikke vises. Uten noe advarsel. Jeg har fikset dem.
+
+## Generelle kommentarer
+
+-   Dokumentet er reproduserbart i html og pdf format. Flott!
+
+-   La in `citeproc: true`i YAML header for å få `typst` format.
+
+-   Fin gjennomgang av årsaken til maglende data for de fire landene. Dette likte jeg 8-)
+
+-   Siden dere har valgt `lang: en-GB` vil jeg anbefale å bruke britisk engelsk f.eks «analysed» istedenfor «analyzed».
+
+-   Har forslått noen språklige endringer. Bruk dem hvis dere er enig.
+
+-   Ser i `GDP_noFlag.xlsx` at dere ikke har fått med region kode (NUTS3) i gdp filen. Dere har den imidlertid i `demo_noFlag.xlsx`. Dermed kan dere i prinsippet greie dere med å legge data fra gdp til demo og bruke Time (year) og Region Navn som nøkkel. Dette er imidlertid risikabelt så jeg har hentet ned en ny GDP.xlsx fil med region code (NUTS3).
+
+-   God diskusjon av hoppene i NUTS2 i Tyskland.
+
+-   Ser dere noe av det Seidel et al rapporterte: «Findings also showed that for about 70% of countries, regional gaps got smaller, while other countries saw inequality grow. They also discovered an “n-shaped” link between development and regional inequality: in early stages of growth inequality is low, for mid-income regions it rises, before it falls again in rich economies.»

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ag_comments</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="ag_comments_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ag_comments_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="ag_comments_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="ag_comments_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="ag_comments_files/libs/quarto-html/popper.min.js"></script>
+<script src="ag_comments_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ag_comments_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ag_comments_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ag_comments_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ag_comments_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ag_comments_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ag_comments_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">ag_comments</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<ul>
+<li>Har lagt inn en <code>lst-label:</code> som gir caption (via <code>#|lst-cap</code>) for code-chunks.</li>
+<li>Dere burde nevnt at dataene er fra tabellen <code>nama_10r_3gdp</code></li>
+<li>Populasjonsdataene er fra tabellen <code>demo_r_pjanaggr3</code></li>
+<li>Jeg foreslår å bytte fra raw_econ til gdp_wide. Sier mer om dataene.</li>
+<li>Long varianten (tidy varianten) kan da kalles gdp.</li>
+<li>Endrer litt på range og bruke samme triks som for gdp for å få lest inn data.</li>
+<li>Foreslår å endre navn til pop_wide for populasjonsdata</li>
+<li>Endret fra fig-cap til tbl-cap i cunken med label tbl-tidyjoined. Reglene er at for figure må label starte med fig- og for table må den starte med tbl-. Så kan en ha hhv. fig-cap for figure og tbl-cap for table. Merk imidlertid lst-label og lst-cap hvis en vil ha kryssreferanse til codechunks (her kan en også ha en label i tillegg på chunken for å få navn på den chunken der en eventuell feil er). Ikke bruke underscore (_) eller andre skilletegn i label. Gir trøbbel.</li>
+<li>Har definert <code>%nin%</code> for ‘not in’. Denne finnes ikke i <code>tidyverse</code>, men er lett å definere og grei å ha tilgjengelig.</li>
+<li>Funksjonen <code>psych::describeBy()</code> gir masse deskreptiv statistikk mer er kanskje ikke så lett å presentere i et paper. Jeg har kastet i sammen en funksjon <code>descby()</code> som prøver å gjøre dette.
+<ul>
+<li>Fint eksempel på en ad-hoc R funksjon og også et fint eksempel på både <code>pivot_longer</code> og så <code>pivot_wider</code>.</li>
+</ul></li>
+<li>Diskusjon mht. beskrivende statistikk: Se litt på forskjellen mellom mean og median for GDP_per_capita og også min og max for denne variabelen for de fire landene. Hva kan en konludere med?</li>
+<li>Liker at dere regner ut antall NUTS3 regioner i hver NUTS2 region. Dette er en viktig størrelse. Et spørmål er hvordan den effektivt kan kommuniseres. Se mitt forslag med å legge den inn i header (også et fint eksempel på bruke av <code>unite()</code>)</li>
+<li>Forsøket deres på å lage en flextable av samtlige NUTS3 regioner ble heldigvis stoppet av as_flextables max_row = 10 default ;-) Se mitt forslag om å rapportere utviklingen for NUTS2 regioner i CH, HR og IE. Siden Tyskland har så mange foreslår jeg å rapportere for en NUTS1 region (Bavaria).</li>
+<li>Plot for Sveits er ok, men vurder:
+<ul>
+<li>Har punktene noen informasjonsverdi</li>
+<li>Hva med regionene CH04 og CH07 som bare har 1 NUTS3 region</li>
+<li>Jeg vil anbefale å bruke quarto caption. Da blir ggplot <code>labs()</code> smør på flesk.</li>
+<li>Se mitt forslag til endring i fig-Switzerland-ag. Har lagt på linetype som egenskap siden mitt fargesyn er under par.</li>
+<li>Hvis dere liker endringene kan dere jo også implementere dem for de andre landene.</li>
+</ul></li>
+<li>fig-Germany
+<ul>
+<li>Klarer noen å se forskjell på alle disse linjene?</li>
+<li>Her lurt å gjøre Time om fra integer til et date objekt (year)</li>
+<li>Kanskje lurt å heller la farge kode for NUTS1 nivå</li>
+<li>Har også latt linetype kode for NUTS1</li>
+<li>Her får vi et lite problem siden 14 NUTS1 regioner i Tyskland, men bare 13 ulike linjetyper i ggplot.</li>
+<li>Har løst problemt med å dele opp i to datasett der DE1 blir behandlet for seg.</li>
+<li>Har også vist et alternativ der bare farge angir NUTS1 med viridis fargepalett (skal ha god kontrast mellom fargene). Personlig synes jeg også denne blir for uryddig.</li>
+<li>En løsning er kanskje å splitte dette opp i to plot. Et for NUTS1 regioner med flere NUTS2 regioner og et for NUTS1 med bare 1 NUTS2 region.</li>
+<li>Også her kunne det være en ide å kombinere NUTS1 og count for å angi hvor mange soner det er i hver (men da må antall NUTS2 soner beregns Count angir antall NUTS3 i hver NUTS2 sone).</li>
+</ul></li>
+<li>Merk at <code>#|fig-cap:</code> istedenfor <code>#| fig-cap:</code> er nok til at caption for figuren ikke vises. Uten noe advarsel. Jeg har fikset dem.</li>
+</ul>
+<section id="generelle-kommentarer" class="level2">
+<h2 class="anchored" data-anchor-id="generelle-kommentarer">Generelle kommentarer</h2>
+<ul>
+<li><p>Dokumentet er reproduserbart i html og pdf format. Flott!</p></li>
+<li><p>La in <code>citeproc: true</code>i YAML header for å få <code>typst</code> format.</p></li>
+<li><p>Fin gjennomgang av årsaken til maglende data for de fire landene. Dette likte jeg 8-)</p></li>
+<li><p>Siden dere har valgt <code>lang: en-GB</code> vil jeg anbefale å bruke britisk engelsk f.eks «analysed» istedenfor «analyzed».</p></li>
+<li><p>Har forslått noen språklige endringer. Bruk dem hvis dere er enig.</p></li>
+<li><p>Ser i <code>GDP_noFlag.xlsx</code> at dere ikke har fått med region kode (NUTS3) i gdp filen. Dere har den imidlertid i <code>demo_noFlag.xlsx</code>. Dermed kan dere i prinsippet greie dere med å legge data fra gdp til demo og bruke Time (year) og Region Navn som nøkkel. Dette er imidlertid risikabelt så jeg har hentet ned en ny GDP.xlsx fil med region code (NUTS3).</p></li>
+<li><p>God diskusjon av hoppene i NUTS2 i Tyskland.</p></li>
+<li><p>Ser dere noe av det Seidel et al rapporterte: «Findings also showed that for about 70% of countries, regional gaps got smaller, while other countries saw inequality grow. They also discovered an “n-shaped” link between development and regional inequality: in early stages of growth inequality is low, for mid-income regions it rises, before it falls again in rich economies.»</p></li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

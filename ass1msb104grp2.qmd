@@ -5,6 +5,7 @@ author: "Kristoffer Tufta and Harald Vika"
 date: last-modified
 date-format: "dddd D MMM, YYYY"
 csl: apa7.csl
+citeproc: true
 lang: en-GB
 format:
   html: default
@@ -26,7 +27,6 @@ bibliography: references.bib
 
 ```{r}
 #| label: setup
-#| include: FALSE
 library (tidyverse)
 library (PxWebApiData)
 library(readxl)
@@ -34,44 +34,117 @@ library(purrr)
 library(dineq)
 library(psych)
 library(flextable)
+# define not in
+`%nin%` <- Negate(`%in%`)
+
 ```
 
 ## Data Acquisition
 
-In this assignment we will use four selected countries data from Eurostat to process it and analyse the sub-national GDP (gross domestic product) and population data from the years 2000-2023.
+In this assignment we will use data for four selected countries from Eurostat and process it to analyse the sub-national GDP (gross domestic product) and population data from the years 2000-2023.
 Eurostat serves as the statistical office of the European Union, and their work is to collect and provide statistics on EU countries, through reliable, impartial and comparable data.
-The countries we have analyzed are Germany, Switzerland, Croatia and Ireland.
+The countries we have analysed are Germany, Switzerland, Croatia and Ireland.
 In these datasets we encountered missing values which we decided to keep.
-These NA, or missing data came from different reason for each country.
+These NA, or missing data was caused by different reasons for each country.
 
--   Germany which has the most observations, lacks data for GDP from the time 2023 in a lot of its regions. This can be because of late reporting of its data to Eurostat. There are also some missing data on population during 2000-2010 and a few other regions during 2000-2023 which may be the emergence of new regions or change in their districts that require their own data.
+-   Germany which has the most observations, lacks data for GDP for year 2023 in a lot of its regions. This can be because of late reporting of its data to Eurostat. There are also some missing data on population during 2000-2010 and a few other regions during 2000-2023 which may be caused by the emergence of new regions or changes in districts such that updates are required.
 -   Ireland lacks data from the early 2000 to 2011 in population due to changes in NUTS 3 level in their regions. When it comes to the GDP, Ireland only misses data from 2015-2017 in Mid-West and South-West. This was due to confidentiality concerns [@recentt].
--   Croatia only have NA values on population but its spread by different regions. Same as Germany, here the lack of data can be explained by the changes in regions and districts, which may be the cause of the spread in NA values. It has also been shown that the NUTS2 regions have changed from 2007 to 2021, and the data has been reported using several different NUTS-definitions [@thenuts].
--   Switzerland is a non.EU, but EFTA country, and have not had a data-sharing agreement with Eurostat for NUTS3 GDP from 2000-2007, while in the 2008 the NUTS classification was updated and it was standardized across all regions [@informat]. Switzerland also lacks the data from 2022-2023 which may be they are waiting to finalize the data before releasing it.
+-   Croatia only have NA values on population but its spread out on different regions. The same occurs for Germany, here the lack of data can be explained by the changes in regions and districts, which may be the cause of the spread in NA values. It has also been shown that the NUTS2 regions have changed from 2007 to 2021, and the data has been reported using several different NUTS-definitions [@thenuts].
+-   Switzerland is a non-EU, but EFTA country, and did not have a data-sharing agreement with Eurostat for NUTS3 GDP from 2000-2007. In 2008 the NUTS classification was updated and it was standardized across all regions [@informat]. Switzerland also lacks the data from 2022-2023 which may be that they are waiting to finalize the data before releasing it.
 
-We will then calculate the GDP per capita and explore regional inequality through a EDA (exploratory data analysis).
+We will below calculate the GDP per capita and explore regional inequality through a EDA (exploratory data analysis)
 
 ### GDP per Region
 
-In the code chunk below, we use the "read_excel"-function from the package "readxl" to fetch the downloaded GDP data from Eurostat, and put it away as a table into a function we have called "raw_econ".
-We then use the table stored in the function "raw_econ" to create a tidy dataset, which we have called "tidy_econ".
+In @lst-read-in-data, we use the `read_excel` function from the package `readxl` to read the downloaded GDP data from Eurostat into R.
+We store it in memory as a tibble called `gdp_wide`.
 
 ```{r}
+#| lst-label: lst-read-in-data
+#| lst-cap: Code for reading data from Excel workbooks into R.
+# Har valg display settings hos eurostat slik at
+# jeg får med NUTS3 code og ingen flags mellom 
+# data kolonnene. Med litt hjelp klarer read_excel()
+# å lese inn dataene riktig. Jeg vil foreslå å
+# endre navn til gdp_wide
+gdp_wide <- read_excel(
+  path = "./Data/gdp.xlsx", 
+  sheet = "Sheet 1",
+  skip = 9,
+  na = c(NA, ":"),
+  # Har endret navn fra Geo_Labels til NUTS3
+  col_names = c("NUTS3", "NUTS3name", as.character(2000:2023)),
+  col_type = c(rep("text", 2), rep("numeric", 24))
+)
+```
+
+```{r}
+#| eval: false
 #Removing the metadata from the top and bottom by defining the range.
-raw_econ <- read_excel("./Data/GDP_noFlag.xlsx", sheet = "Sheet 1", range = "A8:Y464", col_types = "text")
+raw_econ <- read_excel(
+  path = "./Data/GDP_noFlag.xlsx", 
+  sheet = "Sheet 1", 
+  range = "A8:Y464", 
+  col_types = "text"
+  )
+```
+
+```{r}
+#| label: tbl-nuts3-de
+#| tbl-cap: GNP in millon € for 15 German NUTS3 regions in year 2000.
+# ikke så lurt å printe hele denne store
+# tabellen, men vi kan jo ta litt av den
 #Dropping the first row to align time with years
-  raw_econ <- raw_econ[-1,]
-  names(raw_econ)[1] <- "Geo_Labels"
-as_flextable(raw_econ)
+gdp_wide  |> 
+  pivot_longer(
+    cols = `2000`:`2023`,
+    names_to = "year",
+    values_to = "gdp"
+  ) |> 
+  filter(str_sub(NUTS3, 1, 2) == "DE") |> 
+  arrange(year, NUTS3) |> 
+  rename(`GDP (mill. €)` = gdp) |> 
+  head(n = 15) |> 
+  as_flextable(
+    show_coltype = FALSE,
+    max_row = 20
+  ) |> 
+  line_spacing(space = 0.3) |> 
+  # big.mark er satt til «narrow no-break space»:   
+  # Dette er et unicode tegn og kan finnes ved å velge
+  # insert > Special Characters > Insert Unicode i Visual
+  # mode. Søk etter `U+202f`.
+  colformat_double(j = 4, big.mark = " ") |>
+  delete_part("footer")
 ```
 
 ```{r}
 # Making raw_econ into long format.
-tidy_econ <- pivot_longer(data = raw_econ,
-             cols = -Geo_Labels,
-             names_to = "Time",
-             values_to = "GDP Million EUR")
+# Foreslår navneskifte til gdp
+# Foreslår tildvarende skifte for
+# variabelnavnet fra "GDP Million EUR"
+# til "GDP". HVis vi trenger det mer
+# presise navnet f.eks i en tabell eller
+# figur så kan vi bare rename() i pipe-en.
+gdp <- gdp_wide |> 
+  pivot_longer(
+    cols = -c(NUTS3, NUTS3name),
+    names_to = "Time",
+    values_to = "GDP"
+    )
+```
 
+```{r}
+# se def. av nin i setup chunk
+gdp |> 
+  filter(str_sub(NUTS3, 1, 2) %nin% c("CH", "DE", "HR", "IE")) |> 
+  dim()
+```
+
+```{r}
+# clean up
+gdp <- gdp |> 
+  filter(str_sub(NUTS3, 1, 2) %in% c("CH", "DE", "HR", "IE"))
 ```
 
 ### Demographic Data
@@ -81,7 +154,22 @@ This time we input the data into a function we have called "raw_demo", before we
 
 ```{r}
 #Removing the metadata from the top.
-raw_demo <- read_excel("./Data/demo_noFlag.xlsx", sheet = "Sheet 1", range = "A10:Z487", col_types = "text")
+# Endrer navn
+pop_wide <- read_excel(
+  path = "./Data/demo_noFlag.xlsx", 
+  sheet = "Sheet 1", 
+  # Endret på range for å droppe 2 ekstra rekker
+  range = "A12:Z487", 
+  # prøver samme som for ghdp
+  na = c(NA, ":"),
+  # Har endret navn fra Geo_Labels til NUTS3
+  col_names = c("NUTS3", "NUTS3name", as.character(2000:2023)),
+  col_type = c(rep("text", 2), rep("numeric", 24))
+  )
+```
+
+```{r}
+#| eval: false
 #Dropping the first row to align time with years
   raw_demo <- raw_demo[-1,]
   names(raw_demo)[1] <- "Geo_Codes"
@@ -90,13 +178,60 @@ as_flextable(raw_demo)
 ```
 
 ```{r}
-# Making raw_demo into long format.
-tidy_demo <- pivot_longer(data = raw_demo,
-             cols = c(-Geo_Codes, -Geo_Labels),
-             names_to = "Time",
-             values_to = "Population")
-
+#| label: tbl-nuts3-pop-de
+#| tbl-cap: Population for 15 German NUTS3 regions in year 2000.
+# ikke så lurt å printe hele denne store
+# tabellen, men vi kan jo ta litt av den
+#Dropping the first row to align time with years
+pop_wide  |> 
+  pivot_longer(
+    cols = `2000`:`2023`,
+    names_to = "year",
+    values_to = "pop"
+  ) |> 
+  filter(str_sub(NUTS3, 1, 2) == "DE") |> 
+  arrange(year, NUTS3) |> 
+  rename(Population = pop) |> 
+  head(n = 15) |> 
+  as_flextable(
+    show_coltype = FALSE,
+    max_row = 20
+  ) |> 
+  line_spacing(space = 0.3) |> 
+  # Nå heltall så denne må endres til
+  # colformat_int(). Merk at vi ikke
+  # bruker big.mark på årstall
+  colformat_int(j = 4, big.mark = " ") |>
+  delete_part("footer")
 ```
+
+
+
+
+
+```{r}
+# Making raw_demo into long format.
+# Nå pop_wide into pop
+pop <- pop_wide |> 
+  pivot_longer(
+    cols = c(-NUTS3, -NUTS3name),
+    names_to = "Time",
+    # need short names can rename in pipe if needed
+    values_to = "pop"
+    )
+```
+
+```{r}
+summary(pop)
+```
+
+```{r}
+# se def. av nin i setup chunk
+pop |> 
+  filter(str_sub(NUTS3, 1, 2) %nin% c("CH", "DE", "HR", "IE")) |> 
+  dim()
+```
+
 
 ## GDP Per capita:
 
@@ -106,31 +241,138 @@ We also add two more columns called "Country" and "NUTS2" by Extracting the firs
 
 ```{r}
 #| label: tbl-tidyjoined
-#| fig-cap: "Joined, tidied datasets"
-# Joining the two datasets
-tidyjoined <- left_join(tidy_demo, tidy_econ, by = join_by(Geo_Labels, Time), keep = FALSE)
-# Mutating to add column for GDP per capita.
- tidyjoined <- tidyjoined %>%
-    mutate(
-    `GDP Million EUR` = as.numeric(`GDP Million EUR`),
-    Population = as.numeric(Population),
-    GDP_Capita = (`GDP Million EUR` * 1000000) / Population
-  )
- tidyjoined <- tidyjoined %>%
-   mutate(Country = substr(Geo_Codes, 1, 2), .before = 2)
- tidyjoined <- tidyjoined %>%
-   mutate( NUTS2 = (str_sub(Geo_Codes, start= 1L, end = 4L)), .before = 2)
-as_flextable(tidyjoined)
+#| tbl-cap: "Joined, tidied datasets"
+# Joining the two datasets. Forslår å endre navn til gdp_pop
+# Nå får vi betalt for endringene gjort ovenfor
+gdp_pop <- left_join(
+  x = gdp,
+  y = select(pop, -NUTS3name),
+  by = join_by(NUTS3, Time)
+) |> 
+  mutate(
+    # since GDP in millons
+    GDP_Capita = (1e6 * GDP) / pop
+  ) |> 
+  mutate(
+    NUTS2 = str_sub(NUTS3, start = 1L, end = 4L),
+    NUTS1 = str_sub(NUTS3, start = 1L, end = 3L),
+    Country = str_sub(NUTS3, start = 1L, end = 2L),
+    .before = Time
+  ) |> 
+  select(Country, everything())
 ```
+
 
 ## Descriptive analysis of the "GDP per capita"-table
 
 ```{r}
+#| echo: false
+#| eval: true
+# Funksjon for å gi ok output fra psych:describeBy()
+# Trenger et describeBy object og hvilket en skal beskrive.
+# default er første (1), her er det Sveits ("CH")
+# trenger officer pakken
+descby <- function(x, y = 1) {
+  stopifnot("x must be an describeBy object"= class(x)[2] == "describeBy")
+  name = names(x[y])
+  obj = x[[y]]
+  obj = as_tibble(obj, rownames = "Variables") 
+  obj = select(obj, -vars)
+  obj = pivot_longer(
+    obj,
+    cols = n:se,
+    names_to = "Statistic",
+    values_to ="stat"
+  )
+  obj = pivot_wider(
+    obj,
+    names_from = Variables,
+    values_from = stat
+  )
+  obj = rename(obj, `GDP per capita`= GDP_Capita)
+  obj = as_flextable(
+    obj,
+    show_coltype = FALSE
+  ) 
+  obj = line_spacing(obj, space = 0.3)
+  obj = colformat_double(obj, j = 2:4, big.mark = " ", digits = 2)
+  obj = colformat_double(obj, i = 1, j = 2:4, big.mark = " ", digits = 0)
+  obj = delete_part(obj, "footer")  
+  obj = add_header_lines(obj, name)
+  obj = hline_top(obj, border = officer::fp_border(width = 0), part = "head")
+  
+  obj
+}
+```
+
+```{r}
+# warning: false
 # Descriptive Analysis grouped by country code
-describeBy(
-  tidyjoined,
-  tidyjoined$Country
-)
+dsby <- gdp_pop |> 
+  select(GDP:GDP_Capita) %>%
+  describeBy(
+  group = gdp_pop$Country
+  )
+```
+
+### Switzerland
+
+```{r}
+#| label: tbl-ch1
+#| tbl-cap: Descriptive statistics for Switzerland.
+# ingen y, default er 1. Får derfor første land
+descby(dsby)
+```
+
+```{r}
+#| eval: false
+#| label: tbl-ch
+#| tbl-cap: Descriptive statistics for Switzerland.
+library(tidyr)
+dsby[[1]] |> 
+  as_tibble(rownames = "Variables") |> 
+  select(-vars) |> 
+  pivot_longer(
+    cols = n:se,
+    names_to = "Statistic",
+    values_to ="stat"
+  ) |> 
+  pivot_wider(
+    names_from = Variables,
+    values_from = stat
+  ) |> 
+  rename(`GDP per capita`= GDP_Capita) |> 
+  as_flextable(
+    show_coltype = FALSE
+  ) |> 
+  line_spacing(space = 0.3) |> 
+  colformat_double(j = 2:4, big.mark = " ", digits = 2) |>
+  colformat_double(i = 1, j = 2:4, big.mark = " ", digits = 0) |>
+  delete_part("footer")
+```
+
+### Germany
+
+```{r}
+#| label: tbl-de
+#| tbl-cap: Descriptive statistics for Germany.
+descby(dsby, y = 2)
+```
+
+### Croatia
+
+```{r}
+#| label: tbl-hr
+#| tbl-cap: Descriptive statistics for Croatia.
+descby(dsby, y = 3)
+```
+
+### Ireland
+
+```{r}
+#| label: tbl-ie
+#| tbl-cap: Descriptive statistics for Irland.
+descby(dsby, y = 4)
 ```
 
 Using the following code, we see that we have a total of 3838 NA-values in our dataset.
@@ -138,13 +380,29 @@ Most due to different ways of reporting demographic and economic data, making th
 
 ```{r}
 #NA for all countries
-sum(is.na(tidyjoined))
+sum(is.na(gdp_pop))
 ```
 
 ```{r}
 # Simple statistics for all countries combined
-summary(tidyjoined)
+summary(gdp_pop)
 ```
+
+```{r}
+#| paged.print: false
+#| warning: false
+all <- gdp_pop |> 
+  select(GDP:GDP_Capita) %>%
+  describeBy(
+    group = gdp_pop$Country %in% c("CH", "DE", "HR", "IE")
+  ) |> 
+  descby()
+# Very ugly hack. If not done it would be TRUE
+all$header$content$data[[1]][1] = 'All ("CH", "DE", "HR", "IE")'
+
+all
+```
+
 
 ## Using light levels as a predictor of economic development
 
@@ -169,15 +427,103 @@ We will get this in all cases where there is only one NUTS3-region per NUTS2-reg
 The code chunk below does all this and prints the first 10 results.
 
 ```{r}
-#| label: tbl-ginigdp
-#| fig-cap: "Regional inequality - full table"
-ginigdp <- tidyjoined %>%
+# Beregner gini for NUTS2 regioner
+ginigdp <- gdp_pop %>%
   na.omit %>%
   group_by(NUTS2, Time)%>%
-  summarise( Count = n(),
-            gini = gini.wtd(GDP_Capita, weights = Population))
-as_flextable(ginigdp)
+  summarise(
+    Count = n(),
+    gini = gini.wtd(GDP_Capita, weights = pop),
+    .groups = "drop"
+    )
 ```
+
+```{r}
+#| label: tbl-ginigdp-CH
+#| tbl-cap: "Change i gini-coefficients for the NUTS2 regions in Switzerland. The numbers after n3 are the number of NUTS3 regions in the different NUTS2 regions."
+ginigdp |> 
+  filter(str_sub(NUTS2, 1, 2) == "CH" & Time %in% 2008:2023) |> 
+  unite(NUTS2, NUTS2, Count, sep = "\n N3: ") |> 
+  pivot_wider(
+    names_from = NUTS2,
+    values_from = gini
+  ) |> 
+  as_flextable(
+    show_coltype = FALSE,
+    max_row = 25
+  ) |> 
+  line_spacing(space = 0.3) |> 
+  colformat_double(j = 2:8, digits = 4) |> 
+  delete_part("footer")
+```
+
+
+```{r}
+#| label: tbl-ginigdp-DE2
+#| tbl-cap: 'Change i gini-coefficients for the NUTS2 regions in the NUTS1 region "DE2" (Bavaria) in Germany. (N3 number of NUTS3 regions.)'
+ginigdp |> 
+  filter(str_sub(NUTS2, 1, 3) == "DE2") |> 
+  unite(NUTS2, NUTS2, Count, sep = "\n N3: ") |> 
+  pivot_wider(
+    names_from = NUTS2,
+    values_from = gini
+  ) |> 
+  as_flextable(
+    show_coltype = FALSE,
+    max_row = 35
+  ) |> 
+  line_spacing(space = 0.3) |> 
+  colformat_double(j = 2:8, digits = 4) |> 
+  autofit() |> 
+  theme_booktabs() |> 
+  delete_part("footer")
+```
+
+```{r}
+#| label: tbl-ginigdp-HR
+#| tbl-cap: 'Change i gini-coefficients for the NUTS2 regions in Croatia. (N3 number of NUTS3 regions.)'
+ginigdp |> 
+  filter(str_sub(NUTS2, 1, 2) == "HR") |> 
+  unite(NUTS2, NUTS2, Count, sep = "\n N3: ") |> 
+  pivot_wider(
+    names_from = NUTS2,
+    values_from = gini
+  ) |> 
+  arrange(Time) |> 
+  as_flextable(
+    show_coltype = FALSE,
+    max_row = 35
+  ) |> 
+  line_spacing(space = 0.3) |> 
+  colformat_double(j = 2:5, digits = 4) |> 
+  autofit() |> 
+  theme_booktabs() |> 
+  delete_part("footer")
+```
+
+```{r}
+#| paged.print: false
+#| label: tbl-ginigdp-IE
+#| tbl-cap: 'Change i gini-coefficients for the NUTS2 regions in Ireland. (N3 number of NUTS3 regions.)'
+ginigdp |> 
+  filter(str_sub(NUTS2, 1, 2) == "IE") |> 
+  unite(NUTS2, NUTS2, Count, sep = "\n N3: ") |> 
+  pivot_wider(
+    names_from = NUTS2,
+    values_from = gini
+  ) |> 
+  arrange(Time) |> 
+  as_flextable(
+    show_coltype = FALSE,
+    max_row = 35
+  ) |> 
+  line_spacing(space = 0.3) |> 
+  colformat_double(j = 2:6, digits = 4) |> 
+  autofit() |> 
+  theme_booktabs() |> 
+  delete_part("footer")
+```
+If we need to reference the tables we can do it like this @tbl-ginigdp-CH, @tbl-ginigdp-DE2, @tbl-ginigdp-HR and @tbl-ginigdp-IE.
 
 ## Visualizing the Gini coefficient
 
@@ -188,7 +534,7 @@ To do this, we first filter down to the specific country, before we send the dat
 
 ```{r}
 #| label: fig-Switzerland
-#| fig-cap: "Regional GDP Inequality in Switzerland"
+#| fig-cap: "Regional GDP Inequality in Switzerland by NUTS2-regions."
 #Gini Switzerland
 #Plot for Switzerland 
 ginigdp %>%
@@ -198,6 +544,29 @@ ggplot(mapping = aes(x = Time, y = gini, colour = NUTS2, group = NUTS2)) +
   geom_line() +
   labs(x = "Year", y = "Gini-Coefficient", title = "Regional GDP Inequality in Switzerland", subtitle = "By NUTS2-region")
 ```
+
+```{r}
+#| label: fig-Switzerland-ag
+#| fig-cap: "Regional GDP Inequality in Switzerland by NUTS2-regions. Both regions CH04 and CH07 includes only one NUTS3 region and are excluded."
+#Gini Switzerland
+#Plot for Switzerland 
+ginigdp %>%
+  filter(startsWith(NUTS2, "CH")) %>%
+  filter(NUTS2 %nin% c("CH04", "CH07")) |> 
+ggplot(
+  mapping = aes(
+    x = Time, 
+    y = gini, 
+    colour = NUTS2, 
+    group = NUTS2,
+    linetype = NUTS2
+    )
+  ) + 
+  geom_line() +
+  labs(x = "Year", y = "Gini-Coefficient")
+```
+
+
 
 @fig-Switzerland shows low Gini-coefficients for each region, with a tendency to stay below 0.20.
 There is seemingly a divide into two groups one of which has a higher gini-coefficient than the other.
@@ -230,7 +599,7 @@ The graph seems to show a trend towards slowly growing regional inequality of de
 
 ```{r}
 #| label: fig-Germany
-#|fig-cap: "Regional GDP Inequality in Germany - Full graph"
+#| fig-cap: "Regional GDP Inequality in Germany - Full graph"
 #Gini Germany
 ginigdp %>%
   filter(startsWith(NUTS2, "DE")) %>%
@@ -240,6 +609,179 @@ ggplot(mapping = aes(x = Time, y = gini, colour = NUTS2, group = NUTS2)) +
   theme(axis.text.x = element_text(angle = 45)) +
   labs(x = "Year", y = "Gini-Coefficient", title = "Regional GDP Inequality in Germany", subtitle = "By NUTS2-region - full graph")
 ```
+
+```{r}
+#| label: fig-Germany-ag1
+#| fig-cap: "Regional GDP Inequality in Germany - Full graph. The zones in DE1 are depicted with black solid somewhat thicker lines."
+#Gini Germany
+ginigdp %>%
+  filter(startsWith(NUTS2, "DE")) %>%
+  filter(gini > 0) |> 
+  mutate(
+    year = paste(Time, "01-01", sep = "-"),
+    year = ymd(year),
+    NUTS1 = str_sub(NUTS2, 1, 3)
+  ) |> 
+ggplot(
+      mapping = aes(
+      x = year, 
+      y = gini
+      )
+      ) + 
+  #geom_point(mapping = aes()) + 
+  geom_line(
+    # triks for å filtrere data
+    data = . %>% filter(!NUTS1 == "DE1"),
+    mapping = aes(
+      colour = NUTS1,
+      linetype = NUTS1,
+      group = NUTS2
+      )
+  ) +
+  geom_line(
+    # triks for å filtrere data
+    data = . %>% filter(NUTS1 == "DE1"),
+    mapping = aes(
+      group = NUTS2
+      ),
+    colour = "black", 
+    linetype = "solid",
+    linewidth = 0.7
+    ) +
+  #theme(axis.text.x = element_text(angle = 45)) +
+  labs(x = "Year", y = "Gini-Coefficient")
+```
+
+```{r}
+#| label: fig-Germany-ag2
+#| fig-cap: "Regional GDP Inequality in Germany - Full graph."
+#Gini Germany
+ginigdp %>%
+  filter(startsWith(NUTS2, "DE")) %>%
+  filter(gini > 0) |> 
+  mutate(
+    year = paste(Time, "01-01", sep = "-"),
+    year = ymd(year),
+    NUTS1 = str_sub(NUTS2, 1, 3)
+  ) |> 
+ggplot(
+      mapping = aes(
+      x = year, 
+      y = gini
+      )
+      ) + 
+  #geom_point(mapping = aes()) + 
+  geom_line(
+    mapping = aes(
+      colour = NUTS1,
+      group = NUTS2
+      ),
+    linewidth = 0.7
+  ) +
+ scale_colour_viridis_d() +
+  labs(x = "Year", y = "Gini-Coefficient")
+```
+
+```{r}
+multiN2 <- ginigdp |> 
+  filter(
+    str_sub(NUTS2, 1, 2) == "DE"
+  ) |> 
+  mutate(
+    NUTS1 = str_sub(NUTS2, 1, 3)
+  ) |> 
+  group_by(NUTS1, Time) |> 
+  summarise(
+    N2 = n(),
+    .groups = "drop"
+  ) |> 
+  filter(N2 > 1 & Time == 2022) |> 
+  select(NUTS1) |> 
+  pull()
+```
+
+```{r}
+oneN2 <- ginigdp |> 
+  filter(
+    str_sub(NUTS2, 1, 2) == "DE"
+  ) |> 
+  mutate(
+    NUTS1 = str_sub(NUTS2, 1, 3)
+  ) |> 
+  group_by(NUTS1, Time) |> 
+  summarise(
+    N2 = n(),
+    .groups = "drop"
+  ) |> 
+  filter(N2 == 1 & Time == 2022) |> 
+  select(NUTS1) |> 
+  pull()
+```
+
+
+```{r}
+#| label: fig-Germany-ag3
+#| fig-cap: "Regional GDP Inequality in Germany - NUTS1 regions with multiple NUTS2 regions."
+#Gini Germany
+ginigdp %>%
+  filter(startsWith(NUTS2, "DE")) %>%
+  filter(gini > 0) |> 
+  mutate(
+    year = paste(Time, "01-01", sep = "-"),
+    year = ymd(year),
+    NUTS1 = str_sub(NUTS2, 1, 3)
+  ) |> 
+  filter(NUTS1 %in% multiN2) |> 
+  ggplot(
+      mapping = aes(
+      x = year, 
+      y = gini
+      )
+      ) + 
+  geom_line(
+    mapping = aes(
+      group = NUTS2
+      ),
+    linewidth = 0.3
+  ) +
+  facet_wrap(~NUTS1, ncol = 3, scales = "fixed") +
+ scale_colour_viridis_d() +
+  labs(x = "Year", y = "Gini-Coefficient") +
+  theme(legend.position = "none")
+```
+
+```{r}
+#| label: fig-Germany-ag4
+#| fig-cap: "Regional GDP Inequality in Germany - NUTS1 regions with a single NUTS2 region."
+#Gini Germany
+ginigdp %>%
+  filter(startsWith(NUTS2, "DE")) %>%
+  filter(gini > 0) |> 
+  mutate(
+    year = paste(Time, "01-01", sep = "-"),
+    year = ymd(year),
+    NUTS1 = str_sub(NUTS2, 1, 3)
+  ) |> 
+  filter(NUTS1 %in% oneN2) |> 
+  ggplot(
+      mapping = aes(
+      x = year, 
+      y = gini
+      )
+      ) + 
+  geom_line(
+    mapping = aes(
+      group = NUTS2
+      ),
+    linewidth = 0.3
+  ) +
+  facet_wrap(~NUTS1, ncol = 3, scales = "fixed") +
+ scale_colour_viridis_d() +
+  labs(x = "Year", y = "Gini-Coefficient") +
+  theme(legend.position = "none")
+```
+
+
 
 Germany has been very consistent at reporting data and we have data for the full period, but as @fig-Germany shows, we have a little bit of an information overload on our hands.
 Germany consists of up to 38 NUTS2 regions which is crowding the graph, making it very hard to read.
@@ -334,4 +876,3 @@ It was only used to function test our codes and recommend correct grammar and co
 sessionInfo()
 citation()
 ```
-
