@@ -38,18 +38,25 @@ editor: visual
 
 ## Generelle kommentarer
 
--   Dokumentet er reproduserbart i html og pdf format. Flott!
+-   Dokumentet er reproduserbart i html og pdf format.
+    Flott!
 
 -   La in `citeproc: true`i YAML header for å få `typst` format.
 
--   Fin gjennomgang av årsaken til maglende data for de fire landene. Dette likte jeg 8-)
+-   Fin gjennomgang av årsaken til maglende data for de fire landene.
+    Dette likte jeg 8-)
 
 -   Siden dere har valgt `lang: en-GB` vil jeg anbefale å bruke britisk engelsk f.eks «analysed» istedenfor «analyzed».
 
--   Har forslått noen språklige endringer. Bruk dem hvis dere er enig.
+-   Har forslått noen språklige endringer.
+    Bruk dem hvis dere er enig.
 
--   Ser i `GDP_noFlag.xlsx` at dere ikke har fått med region kode (NUTS3) i gdp filen. Dere har den imidlertid i `demo_noFlag.xlsx`. Dermed kan dere i prinsippet greie dere med å legge data fra gdp til demo og bruke Time (year) og Region Navn som nøkkel. Dette er imidlertid risikabelt så jeg har hentet ned en ny GDP.xlsx fil med region code (NUTS3).
+-   Ser i `GDP_noFlag.xlsx` at dere ikke har fått med region kode (NUTS3) i gdp filen.
+    Dere har den imidlertid i `demo_noFlag.xlsx`.
+    Dermed kan dere i prinsippet greie dere med å legge data fra gdp til demo og bruke Time (year) og Region Navn som nøkkel.
+    Dette er imidlertid risikabelt så jeg har hentet ned en ny GDP.xlsx fil med region code (NUTS3).
 
 -   God diskusjon av hoppene i NUTS2 i Tyskland.
 
--   Ser dere noe av det Seidel et al rapporterte: «Findings also showed that for about 70% of countries, regional gaps got smaller, while other countries saw inequality grow. They also discovered an “n-shaped” link between development and regional inequality: in early stages of growth inequality is low, for mid-income regions it rises, before it falls again in rich economies.»
+-   Ser dere noe av det Seidel et al rapporterte: «Findings also showed that for about 70% of countries, regional gaps got smaller, while other countries saw inequality grow.
+    They also discovered an “n-shaped” link between development and regional inequality: in early stages of growth inequality is low, for mid-income regions it rises, before it falls again in rich economies.»

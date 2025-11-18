@@ -1,0 +1,351 @@
+---
+title: "Assignment 2:"
+subtitle:  "Regional GDP Inequality in 4 Selected European Economies - Exploring Determinants"
+author: "Kristoffer Tufta and Harald Vika"
+date: last-modified
+date-format: "dddd D MMM, YYYY"
+csl: apa7.csl
+lang: en-GB
+format:
+  html: default
+  typst:
+    papersize: a4
+  pdf: 
+    documentclass: article
+    number-sections: true
+    keep-tex: true
+    papersize: A4
+    fig-pos: "H"
+abstract: ""
+editor: 
+  markdown: 
+    wrap: sentence
+echo: false
+bibliography: references.bib
+---
+
+```{r}
+#| label: setup
+#| include: FALSE
+#| message: false
+#| warning: false
+library (tidyverse)
+library (PxWebApiData)
+library(readxl)
+library(purrr)
+library(dineq)
+library(psych)
+library(flextable)
+library(modelsummary)
+library(lmtest)
+
+```
+
+
+# Part A: Growth and Inequality
+
+
+In this assignment we build on the foundation we made in assignment 1.
+Using the calculated regional inequality and gdp per capita, we estimate a simple cross-sectional Ordinary Least Squares (OLS) regression for the year 2017 in our selected countries, broken down by NUTS2-region.
+
+### Expected Relationships
+
+Basing ourselves on the theory established by @lessmann2017, we predict that we can see a link between regional inequality and economic growth.
+They described the relationship as an "inverted U, or maybe even an N-shaped" relationship between inequality and development.
+In short, this implies that regional inequality is at it's lowest for low and high-income countries, but higher for middle-income countries.
+Based on this theory, we expect a negative slope coefficient: regions with stronger growth from 2016 to 2017 should, on average, exhibit slightly lower inequality.
+
+## Making the regression model
+
+### Preparing the data
+
+First point of action: data preparation.
+In the following code chunk we read the data produced in document 1, and select our needed columns.
+We then sum up the totals of GDP and population for each NUTS2-region.
+Since we want to look at a cross-section of the year 2017 - including a change in gdp, we have to do a little bit of calculation.
+We filter our "Time"-column so that it only shows the years 2016 and 2017, and then we add a new column called "Lagged_capita".
+The "Lagged_capita"-column shows the GDP value for the previous year, and lets us add another column where we calculate the percentage change in GDP, on just one row.
+Since 2015 has been filtered away, we see some NA-values in all the rows showing GDP change and lagged capita for 2016, but we will filter these away in the next step anyways, so no harm done.
+
+```{r}
+#Getting data from Tidyjoined (GDP, Poupulation), summing by Nuts2. 
+GDPChange <- readRDS("./Data/Tidyjoined.rds") %>%
+  select(NUTS2, Country, Time, `GDP Million EUR`, Population) %>%
+  group_by(NUTS2, Country, Time) %>%
+  summarise(
+    "N2GDPSUM" = sum(`GDP Million EUR`, na.rm = TRUE),
+    "N2POPSUM" = sum(Population, na.rm = TRUE),
+    "N2GDPCAP"  = (N2GDPSUM * 1000000)/ N2POPSUM,
+    .groups = "drop")%>%
+write_rds("./data/TidyNUTS2.rds")
+```
+
+
+```{r}
+#Filtering by year 2016/2017 and mutating column for change in GDP.
+GDPChange %>%
+  filter(Time > "2015" & Time < "2018")%>%
+mutate(
+    lagged_capita = dplyr::lag(N2GDPCAP),
+    chg_gdpc = (N2GDPCAP - lagged_capita)/lagged_capita,
+    chg_gdpc = 100 * chg_gdpc)
+as_flextable(GDPChange)
+```
+
+We then join the table showing our calculated Gini-coefficients from assignment 1 onto this newly prepared table, and filter down to the year 2017.
+
+```{r}
+#Joining the Gini dataset onto the filtered table showing GDPC change.
+ineqgdpcjoined <- left_join(GDPChange, readRDS("./data/ginigdp.rds"),
+by = join_by(NUTS2, Time), keep = FALSE)%>%
+  filter(Time == "2017")
+as_flextable(ineqgdpcjoined)
+```
+
+### Model Specification
+
+The model will examine if intraregional inequality - represented by a calculated Gini-coefficient of GDP per capita in each NUTS2 region - is associated with short-term economic development across NUTS2 regions:
+
+$$
+\text{Gini}_{i,2017} = \alpha + \beta \, \Delta \text{GDPpc}_{i,2016 \to 2017} + u_i
+$$ Where:
+
+-   $\text{Gini}_{i,2017}$ — Calculated Gini coefficient of region *i* in 2017 (regional GDP per capita inequality)\
+-   $\Delta \text{GDPpc}_{i,2016 \to 2017}$ — percent change in GDP per capita from 2016 to 2017 in region *i*\
+-   $\alpha$ — intercept term (baseline inequality when GDP-per-capita change is zero)\
+-   $\beta$ — slope coefficient showing how inequality changes with a one-percentage-point increase in GDP-per-capita growth\
+-   $u_i$ — error term capturing unobserved regional factors
+
+**Variable selection**
+
+Dependent variable: Regional inequality (Gini) was chosen because it quantifies GDP inequality within each NUTS2 region and directly represents the outcome discussed in the literature on regional convergence.
+
+Independent variable: Change in GDP per capita captures short-term economic development, making it suitable to test whether faster-growing regions are converging or diverging in terms of inequality.
+
+Both variables are derived from Eurostat data prepared in assignment 1.
+
+```{r}
+lmineqgdpc <-
+summary(lm(gini ~ chg_gdpc, data = ineqgdpcjoined)
+)
+```
+
+```{r}
+#| label: tbl-Regdev-Gini
+#| fig-cap: "Regression - Regional GDP Inequality as a function of GDP"
+as_flextable(
+lm(gini ~ chg_gdpc, data = ineqgdpcjoined),
+title = "OLS regression of inequality on GDP per capita growth, 2017"
+)
+```
+
+### Model Diagnostics
+
+If we take a look at the results of the model in @tbl-Regdev-Gini, we see that the intercept ($\hat{\alpha}=0.1336$) reflects average inequality when GDP growth is zero, while the slope ($\hat{\beta}=-0.0024$) suggests a small, negative, and statistically insignificant relationship between GDP-per-capita growth and regional inequality ($R^2=0.012$).
+We can determine that the relationship is statistically insignificant due to the (quite large) P-value of 0,435.
+
+In other words, faster-growing NUTS2 regions in 2017 tended to have slightly lower inequality, but the effect is small and not statistically meaningful.
+The R-squared indicates an explanatory power of around 1,2 %, meaning that other variables likely explain much more of the variation.
+
+```{r}
+#| label: tbl-BPtest
+#| fig-cap: Testing for heteroskedasticity via Breusch-Pagan testing of our model.
+bp_reg_lin <- bptest(lmineqgdpc)
+bp_reg_lin |> 
+  as_flextable() |> 
+  line_spacing(space = 0.3, part = "all")
+```
+
+In @tbl-BPtest we check for heteroskedasticity by running a Breusch-Pagan test on our regression model.
+With a P-value of 0,29 (more than \<0,05), we conclude that we have homoskedasticity.
+
+#### OLS Assumptions
+
+The "ordinary least squares"-method includes a few classical assumptions that have to be validated for the model to produce the best possible estimates.
+
+1.  **Linearity:** The true relationship between our dependent variable (regional inequality) and explanatory variable (GDP per capita growth) is assumed to be linear in the parameters, plus an additive error term. In layman's terms: we assume the data can be described by a straight line, plus some random noise. If this assumption is wrong, our line will systematically miss the pattern, for instance, if the real relationship *curves* upward or *flattens* at higher GDP growth levels. Potential fix: Try transforming variables (log, square root) or adding non-linear terms.
+2.  **Sample Variation:** There must be actual variation in the explanatory variable(s). If all regions had identical GDP growth (the same X), we couldn’t estimate a slope. In our data: The growth rates clearly vary between regions, so this assumption holds. If violated: OLS can’t separate effects or compute a meaningful slope. Fix: Gather more varied data or remove redundant variables.
+3.  **Random Sampling**: The observations are assumed to be randomly drawn from the population. This ensures that each region represents the broader population of NUTS2 regions without systematic bias. Our dataset comes from Eurostat, which covers all regions of the selected countries, so it’s not truly random but close enough to the full "population" to treat as representative. If violated: The sample might systematically over- or under-represent certain types of regions, leading to biased results.
+4.  **Exogeneity:** The most important assumption! It means that the error term — the “unexplained stuff” — has an average value of zero and is unrelated to our GDP growth. In other words, growth shouldn’t be correlated with hidden factors that also influence (confound) inequality, like education levels, industry mix, or policy differences. If violated: The slope estimate becomes biased because it accidentally captures the influence of those hidden factors. Fix: Add instrumental variables that isolate exogenous variation and run a 2SLS-test.
+5.  **Homoskedasticity**: The error term has the same variance for each value of the independent variable. We tested for heteroskedasticity in @tbl-BPtest , so we can rest assured that this assumption holds for our data. If this assumption had been violated and we could conclude with heteroskedasticity, we would have had unreliable standard errors and P-values.
+6.  **Normality of the Error Term** The error term is assumed to follow a normal distribution with mean zero. This assumption mainly matters for small samples, as the assumption of normality can be replaced by a large sample size (as defined in the cental limit theorem). It ensures that t-tests and confidence intervals work as expected. In our data: With around 50 NUTS2-regions (aggregated from 476 NUTS3-regions), slight deviations from normality are not a big problem here.
+
+```{r}
+#| label: fig-RegDev-Gini
+#| fig-cap: "Regional GDP Inequality as a function of GDP"
+#| warning: false
+#| message: false
+ineqgdpcjoined %>%
+ggplot(aes(x = chg_gdpc, y = gini)) +
+geom_point(size = 2, alpha = 0.7, aes(colour = Country)) +
+geom_smooth(method = "lm", se = TRUE) +
+labs(
+title = "Regional development and inequality across NUTS2 regions, 2017",
+subtitle = "OLS fit of Gini coefficient on GDP per capita growth (2016→2017)",
+x = "GDP per capita growth (%)",
+y = "Regional inequality (Gini coefficient)"
+)
+```
+
+@fig-RegDev-Gini plots the relationship between GDP per capita growth and regional inequality across NUTS2 regions in 2017.
+Each point represents one NUTS2-region.
+The fitted regression line shows a slight negative slope, suggesting that regions with faster economic growth tended to have marginally lower inequality, although the relationship is weak and statistically insignificant.
+
+# Part B: Exploring Other Determinants of Inequity
+
+In this part of the assignment we will gather data on three new variables that may have a influence on the regional inequity for the year 2017 and justify them.
+We will the use the Gini-coefficient as the dependent variable with the three new variables to create a multiple linear regression and document on the findings.
+The last part of B is to interpretate the estimated coefficients and to discuss their magnitude, direction ad statistical significant.
+Then reflect on the overall model and how the variables explaining the variations in regional inequality.
+
+## Our chosen variables
+
+In part B we have chosen to test for the effect of three additional variables: available labour force, unemployment and population density.
+We will look into each of these variables, and see how they could be determinant factors for regional inequality.
+Like before, these datasets have been fetched from Eurostat.
+
+-   **Labour force** is the variable which includes all persons how are both employed and unemployed. It represents the total supply of labour that's available in the regions, represented in our dataset as "thousand workers".
+-   **Unemployment rate** can be seen as a sub sector from labour force, as these are persons without work, available for work and are seeking work. The variable is shown as a percentage of the total labour force per region. With this variable we may look into if the The unemployment rate has an effect on the income of those in the region, which affects GDP, which will then have a effect on the regional inequality.
+-   **Population density** is given as "persons per square kilometer", and indicates how populated a region is, divided by it's total area. A higher population density can indicate a higher degree of urbanization of a region.
+
+```{r}
+#Removing the metadata from the top and bottom by defining the range.
+#| message: false
+#| warning: false
+raw_Labourforce <- read_excel("./Data/Labour force 2000-2023.xlsx", sheet = "Sheet 1", range = "A10:Z66", col_types = "text")
+#Dropping the first row to align time with years
+   raw_Labourforce <- raw_Labourforce[-1,]
+   names(raw_Labourforce)[1] <- "Geo_Codes"
+   names(raw_Labourforce)[2] <- "Geo_Labels"
+as_flextable(raw_Labourforce)
+```
+
+```{r}
+# Making raw_Labourforce into long format.
+#| message: false
+#| warning: false
+tidy_Labourforce <- pivot_longer(data = raw_Labourforce,
+             cols = c(-Geo_Codes, -Geo_Labels),
+             names_to = "Time",
+             values_to = "Workforce") 
+```
+
+```{r}
+#Removing the metadata from the top and bottom by defining the range.
+#| message: false
+#| warning: false
+raw_Unemployment <- read_excel("./Data/Unemployment rate 2013-2023.xlsx", sheet = "Sheet 1", range = "A11:M68", col_types = "text")
+#Dropping the first row to align time with years
+   raw_Unemployment <- raw_Unemployment[-1,]
+   names(raw_Unemployment)[1] <- "Geo_Codes"
+   names(raw_Unemployment)[2] <- "Geo_Labels"
+as_flextable(raw_Unemployment)
+```
+
+```{r}
+# Making raw_Unemployment into long format.
+tidy_Unemployment <- pivot_longer(data = raw_Unemployment,
+             cols = c(-Geo_Codes, -Geo_Labels),
+             names_to = "Time",
+             values_to = "Unemp_prct") 
+```
+
+```{r}
+#Removing the metadata from the top and bottom by defining the range.
+#| warning: false
+#| message: false
+raw_Population.density <- read_excel("./Data/Population density 2012-2023.xlsx", sheet = "Sheet 1", range = "A8:N60", col_types = "text")
+#Dropping the first row to align time with years
+   raw_Population.density <- raw_Population.density[-1,]
+   names(raw_Population.density)[1] <- "Geo_Codes"
+   names(raw_Population.density)[2] <- "Geo_Labels"
+as_flextable(raw_Population.density)
+```
+
+```{r}
+# Making raw_Population.density into long format.
+tidy_Population.density <- pivot_longer(data = raw_Population.density,
+             cols = c(-Geo_Codes, -Geo_Labels),
+             names_to = "Time",
+             values_to = "Pop_km2")
+```
+
+```{r}
+#| label: tbl-tidyjoined
+#| fig-cap: "A cleaner dataset"
+#| warning: false
+#| message: false
+# Combining the three datasets based on Geo_Labels and Time
+tidyjoined2 <- list(tidy_Population.density, tidy_Labourforce, tidy_Unemployment) %>%
+  reduce(left_join, by = join_by(Geo_Labels, Time)) %>%
+  select(-matches("\\.x$"), -matches("\\.y$"))  # Removes duplicate columns
+
+# Clears and sets the correct column order, filters to the year 2017
+tidyjoined2 <- tidyjoined2 %>%
+  mutate(
+    `Pop_km2` = as.numeric(`Pop_km2`),
+    Unemp_prct = as.numeric(Unemp_prct),
+    Workforce = as.numeric(Workforce),
+    NUTS2 = str_sub(Geo_Codes, start = 1L, end = 4L)
+  ) %>%
+  select(NUTS2, Geo_Labels, Time,
+         Pop_km2,
+         Workforce,
+         Unemp_prct)%>%
+    write_rds("./data/tidyjoined2.rds")
+as_flextable(tidyjoined2)
+
+```  
+
+
+## Multiple Regression Model
+
+We will now test our new variables to see if they have more of an effect on regional inequality.
+To do this, we will be making a multiple regression model where labour force, unemployment and population density serve as explanatory variables.
+We have specified the following multiple linear regression model: $$
+\text{Gini}_{i,2017} = \alpha + \beta_1\,\text{Workforce}_i + \beta_2\,\text{PopDensity}_i + \beta_3\,\text{Unemployment}_i + u_i
+$$
+
+where $\alpha$ is the intercept, $\beta_1$, $\beta_2$, and $\beta_3$ are the slope coefficients for each explanatory variable, and $u_i$ is the error term capturing unobserved factors affecting inequality.
+
+```{r}
+#Merging our new variables onto ineqgdpjoined, creating a new table.
+ineqgdpcjoined2 <- left_join(ineqgdpcjoined, tidyjoined2,
+by = join_by("NUTS2", "Time"), keep = FALSE)
+as_flextable(ineqgdpcjoined2)
+saveRDS(ineqgdpcjoined2, "./data/Gini_EUdata_Full.rds")
+```
+
+```{r}
+#| label: tbl-MLR
+#| fig-cap: "Multiple Regression - Regional GDP Inequality as a function of labour, unemploment and population density."
+as_flextable (lm(gini ~ Workforce + Pop_km2 + Unemp_prct, data = filter(ineqgdpcjoined2, Time > "2015" & Time < "2018") 
+))%>%
+  colformat_double(j = 2, digits = 6)
+```
+
+## Interpreting our results
+
+We can see in @tbl-MLR that the model has an R² of 0,283 and an adjusted R² of 0,235, meaning that approximately 28 % of the variation in regional inequality can be explained by these three predictors.
+We will go over each of the variables below.
+
+**Workforce**: The slope for Workforce (β = 0,000043, p = 0,0216) is statistically significant at the 5 % level.
+Holding population density and unemployment constant, an increase of a thousand workers is associated with a 0,000043 rise in the regional Gini coefficient.
+Economically, regions with larger or more active labour markets tend to experience slightly higher income dispersion, consistent with the idea that economic agglomeration creates greater occupational and wage diversity.
+
+**Population density**: Population density (β = −0,000041, p = 0,0083) is statistically significant at the 1 % level and has a negative sign.
+This implies that more densely populated regions tend to have lower inequality.
+A possible interpretation is that highly urbanised regions benefit from better access to education, more specialized jobs or broader labour-market integration that reduce within-region disparities.
+
+**Unemployment**: The coefficient for Unemployment (β = −0,0114, p = 0,0613) is marginally significant at the 10 % level.
+The negative sign suggests that regions with higher unemployment rates have slightly lower Gini coefficient.
+However, given the weak statistical significance, this relationship should be interpreted with caution.
+
+**Model assessment**: The improvement in explanatory power compared to the first regression model shows that labour-market and demographic characteristics are stronger predictors of regional inequality than just short-term GDP growth alone.
+The aligns with parts of the regional-development theory discussed by @lessmann2017: agglomeration and workforce expansion can increase income dispersion, while institutional factors within densely populated areas may counteract inequality through redistribution and accessibility.
+
+# Part C: Use of AI
+
+In this assignment we have used AI to ask controlling questions and constructive judging of the text and the codes used, including interpreting the results from our models.
+The language models used were ChatGPT 3.5 and chatGPT 5.0.
+All code has been verified by humans, ethically sourced, and has not been tested on animals.

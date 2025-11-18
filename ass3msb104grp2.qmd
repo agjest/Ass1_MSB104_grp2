@@ -1,0 +1,663 @@
+---
+title: "Assignment 3:"
+subtitle:  "Regional GDP Inequality in 4 Selected European Economies - "
+author: "Kristoffer Tufta and Harald Vika"
+date: last-modified
+date-format: "dddd D MMM, YYYY"
+csl: apa7.csl
+lang: en-GB
+format:
+  html: default
+  typst:
+    papersize: a4
+  pdf: 
+    documentclass: article
+    number-sections: true
+    keep-tex: true
+    papersize: A4
+    fig-pos: "H"
+abstract: ""
+editor: 
+  markdown: 
+    wrap: sentence
+echo: false
+bibliography: references.bib
+---
+
+```{r}
+#| label: setup
+#| include: FALSE
+#| message: false
+#| warning: false
+library (tidyverse)
+library (PxWebApiData)
+library(readxl)
+library(purrr)
+library(dineq)
+library(psych)
+library(flextable)
+library(modelsummary)
+library(lmtest)
+library(plm)
+```
+
+# Part A: Testing development effects across subsets
+
+```{r}
+#Reading prewritten datasets
+full_dataset <- readRDS("./data/tidyjoined2.rds")
+xsection2017<- readRDS("./data/Gini_EUdata_full.rds") 
+```
+
+## Segmenting our cross-sectional data
+
+### Population Density
+
+Breaking down our population density into logical segments could help us make a more accurate regression line.
+If we take a look at our dataset, the data varies a lot, where we have many rural regions with low population density, and then some large city-regions with a much higher density.
+To define the classifications, we will be taking inspiration from Eurostat's own definition on urban clusters and density, which divides Europe into:
+
+-   *"Urban centre (high-density cluster): a cluster of contiguous grid cells of 1 km² (excluding diagonals) with a population density of at least 1 500 inhabitants per km² and collectively a minimum population of 50 000 inhabitants after gap-filling*
+-   *Urban cluster (moderate-density cluster): a cluster of contiguous grid cells of 1 km² (including diagonals) with a population density of at least 300 inhabitants per km² and a minimum population of 5 000 inhabitants*
+-   *Rural grid cells: grid cells that aren’t identified as urban centres or as urban clusters."*
+
+[@populati]
+
+Their classification is based on continuous cell clusters of one square kilometer cells , whereas ours is for whole NUTS2-regions, but we will be using the same break values.
+
+```{r}
+#Population density
+xsection2017 <- xsection2017 %>% 
+  mutate(
+    Density_class = cut(
+      Pop_km2,
+      breaks = c(0, 300, 1500, Inf),
+      labels = c("Rural", "Medium Density", "High Density"),
+      include.lowest = TRUE
+    )
+  )
+
+```
+
+```{r}
+#| label: tbl-Reg
+#| fig-cap: "Effect of GDP change on regional inequality - Sectioned by population density "
+#| Title: "Effect of GDP change on regional inequality - Sectioned by population density "
+#Reg. Pop density
+lmregHD <- xsection2017 %>%
+  filter(Density_class == "High Density") %>%
+  lm(formula = gini ~ chg_gdpc)
+lmregMD <- xsection2017 %>%
+  filter(Density_class == "Medium Density") %>%
+  lm(formula = gini ~ chg_gdpc)
+lmregRural <- xsection2017 %>%
+  filter(Density_class == "Rural") %>%
+  lm(formula = gini ~ chg_gdpc)
+modelsummary(
+  models = list(
+    "High Density" = lmregHD,
+    "Medium Density" = lmregMD,
+"Rural" = lmregRural
+  ),
+  fmt = 4,
+  output = "flextable"
+) %>%
+  autofit() %>% 
+  line_spacing(space = 0.4, part = "body") 
+```
+
+Running a regression model on our high density subsection, we get a negative relationship (-0,020) between an increase in GDP per capita and our calculated Gini coefficient.
+The result is however barely statistically insignificant, with a P-value of 0,08.
+Running the same model for our medium density section, we see a positive relationship between the two variables.
+The result is however not statistically significant, with a P-value of 0,59.
+Our rural section is also not statistically significant, but the relationship flips to negative again.
+
+### Workforce
+
+Our data on available workforce is much more linear than for population density, so here we will simply be doing a quantile split into three equally sized classifications: "low", "medium" and "high" workforce.
+
+```{r}
+#Workforce
+xsection2017 <- xsection2017 %>%
+  mutate(Workforce_Class = cut(Workforce,
+                           breaks = quantile(Workforce, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE),
+                           include.lowest = TRUE,
+                           labels = c("Low", "Medium", "High")))
+
+```
+
+```{r}
+#| label: tbl-Reg_Workforce
+#| fig-cap: "Effect of GDP change on regional inequality - Sectioned by workforce availability"
+#| Title: "Effect of GDP change on regional inequality - Sectioned by workforce availability"
+
+# Regressions by Workforce_Class
+lmregWF_High <- xsection2017 %>%
+  filter(Workforce_Class == "High") %>%
+  lm(formula = gini ~ chg_gdpc)
+
+lmregWF_Medium <- xsection2017 %>%
+  filter(Workforce_Class == "Medium") %>%
+  lm(formula = gini ~ chg_gdpc)
+
+lmregWF_Low <- xsection2017 %>%
+  filter(Workforce_Class == "Low") %>%
+  lm(formula = gini ~ chg_gdpc)
+
+modelsummary(
+  models = list(
+    "High Workforce" = lmregWF_High,
+    "Medium Workforce" = lmregWF_Medium,
+    "Low Workforce" = lmregWF_Low
+  ),
+  fmt = 4,
+  output = "flextable"
+) %>%
+  autofit() %>% 
+  line_spacing(space = 0.4, part = "body")
+
+```
+
+When applying our model on the "high available workforce"-subset, we see a positive relationship between GDP change and Gini, although it is not statistically significant.
+
+For our "medium workforce", the relationship inverts again, but also here statistically insignificant
+
+Low available workforce inverts the relationship once again, but also here statistically insignificant.
+
+### Unemployment Rate
+
+For unemployment rate, we have a pretty continuous spread from 2% to 7%, before we see a few outliers with much higher unemployment rates, relative to the rest of the dataset.
+We have chosen to section our datasets into three sections: low, medium and high unemployment rates, with breaks being at 0%, \>5% and \>10%
+
+```{r}
+xsection2017 <- xsection2017 %>%
+  mutate(
+    Unemp_Class = cut(
+      Unemp_prct,
+      breaks = c(0, 5, 10, Inf),
+      labels = c("Low", "Medium", "High"),
+      include.lowest = TRUE
+    )
+  )
+
+```
+
+```{r}
+#| label: tbl-Reg_Unemployment
+#| fig-cap: "Effect of GDP change on regional inequality - Sectioned by unemployment rate"
+#| Title: "Effect of GDP change on regional inequality - Sectioned by unemployment rate"
+
+# Regressions by Unemployment_Class
+lmregUnemp_High <- xsection2017 %>%
+  filter(Unemp_Class == "High") %>%
+  lm(formula = gini ~ chg_gdpc)
+
+lmregUnemp_Medium <- xsection2017 %>%
+  filter(Unemp_Class == "Medium") %>%
+  lm(formula = gini ~ chg_gdpc)
+
+lmregUnemp_Low <- xsection2017 %>%
+  filter(Unemp_Class == "Low") %>%
+  lm(formula = gini ~ chg_gdpc)
+
+modelsummary(
+  models = list(
+    "High Unemployment" = lmregUnemp_High,
+    "Medium Unemployment" = lmregUnemp_Medium,
+    "Low Unemployment" = lmregUnemp_Low
+  ),
+  fmt = 4,
+  output = "flextable"
+) %>%
+  autofit() %>% 
+  line_spacing(space = 0.4, part = "body")
+
+```
+
+The model for the "high unemployment" section showed remarkable predictive power, with an R-squared of 1, but we have opted out of including this in our table due to the small amount of observations.
+The high unemployment section ony contained two observations which were statistical outliers, relative to the rest of the data.
+While isolating these outliers from the rest of the data could help produce a better linear model, using the linear model on the isolated "high" set proved unproductive.
+We have presented the results from the data.
+
+```{r}
+xsection2017 %>%
+    lm(formula = gini ~ chg_gdpc + Density_class) %>%
+  as_flextable()
+```
+
+```{r}
+xsection2017 %>%
+filter(Unemp_Class == "High") %>%
+  summary(output = "Flextable")
+```
+
+In the "medium unemployment" subsection, we see that there is a small, negative, but statistically insignificant relationship between increasing GDP per capita and regional inequality.
+
+For our "low unemployment" subset however, the relationship between GDPC increase and regional inequality is positive, but still statistically insignificant.
+
+## Subset Analysis Discussion
+
+Segmenting the data reveals that the estimated relationship between GDP growth and regional inequality changes depending on which type of region we are looking at.
+For population density, the rural group shows a very small and statistically weak negative coefficient.
+Medium-density regions display a similarly weak pattern, also statistically insignificant.
+Only the high-density subset shows a noticeably larger negative estimate, but it still lacks statistical significance.
+In addition to this, several of the regions in the "high density"-category include only one NUTS2-region, automatically making these regions more equal.
+In other words, the relationship between GDP growth and regional GDP inequality becomes stronger in magnitude as density increases, but we don't have enough evidence to treat this as a consistent pattern.
+
+The workforce availability segments show a similar story.
+Regions with lower workforce availability exhibit weaker estimates, while the high-workforce subset shows a somewhat stronger association.
+Still, uncertainty is large, and none of the segments are statistically significant.
+
+For unemployment segments, the differences are also mostly about magnitude.
+Low-unemployment regions tend to have smaller estimated effects, while medium and high segments show slightly larger coefficients.
+Again, none of these are precise enough to draw conclusions, but the variation itself suggests that the relationship between development and inequality isn’t identical across labour-market contexts.
+
+Overall, the subset analysis doesn’t point to a single, stable development–inequality relationship across all our regional types.
+Instead, we see small differences in coefficient size across population density, unemployment, and workforce segments, with no segment showing a statistically significant effect.
+
+
+## Part B Exploring Alternative Functional forms
+
+-Functional form exploration: Here we are chosing two of three alternative functional forms logarithmic, quadratic and cubic, to see which is a better fit.
+
+```{r}
+# Creating different functional forms for change in gdpc
+# Linear funksjon
+as_flextable (lm(gini ~ chg_gdpc, data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)
+linear_chg_gdpc <- lm(gini ~ chg_gdpc, data = xsection2017)
+
+# Logarithmic:
+as_flextable (lm(gini ~ log(chg_gdpc), data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)
+Log_chg_gdpc <- lm(gini ~ log(chg_gdpc), data = xsection2017)
+
+#Quadratic:
+as_flextable (lm(gini ~ chg_gdpc + I(chg_gdpc^2), data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)
+Kvad_chg_gdpc <- lm(gini ~ chg_gdpc + I(chg_gdpc^2), data = xsection2017)
+```
+
+Modell 1 og 2 passer best for denne variabelen, forklar For the employment rate we have chosen the logarithmic and the quadratic functions to see if they provide a better fit.
+Model one gives a p-verdi for hele modellen på en 0.0018 noe som viser at modellen forklarer en variasjon i repsonsvariablene.
+Så får vi en R²=0.27 som sier at modellen har en 27% forklaringskraft på den The first model is the logarithmic function which gives a estimated value of 0.233016 when all explanatory variables are 0
+
+```{r}
+# Creating different functional forms for Labour force 
+# Linear function
+as_flextable(lm(gini ~ Workforce, data = xsection2017))
+linear_Workforce <- lm(gini ~ Workforce, data = xsection2017)
+
+# Logarithmic function:
+as_flextable (lm(gini ~ log(Workforce), data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)
+Log_Workforce <- lm(gini ~ log(Workforce), data = xsection2017)
+
+#Quadratic function:
+as_flextable (lm(gini ~ Workforce + I(Workforce^2), data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)
+Kvad_Workforce <- lm(gini ~ Workforce + I(Workforce^2), data = xsection2017)
+```
+
+Modell 1 og modell 2 er de jeg kan bruke men begge har en svært lav forklaringskraft på hvordan workforce påvirker den regional ulikeheten, kan dette være fordi det er der forskjeller i fra den lave til høy?
+
+```{r}
+# Creating different functional forms for Population density 
+# Linear function
+as_flextable(lm(gini ~ Pop_km2, data = xsection2017))
+linear_Pop_km2 <- (lm(gini ~ Pop_km2, data = xsection2017))
+
+# Logarithmic function:
+as_flextable (lm(gini ~ log(Pop_km2), data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)
+Log_Pop_km2 <- lm(gini ~ log(Pop_km2), data = xsection2017)
+
+#Quadratic function:
+as_flextable (lm(gini ~ Pop_km2 + I(Pop_km2^2), data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)
+Kvad_Pop_km2 <- lm(gini ~ Pop_km2 + I(Pop_km2^2), data = xsection2017)
+```
+
+```{r}
+# Creating different functional forms for Population density 
+# Linear function
+as_flextable(lm(gini ~ Unemp_prct, data = xsection2017))
+linear_Unemp <- (lm(gini ~ Unemp_prct, data = xsection2017))
+
+# Logarithmic function:
+as_flextable (lm(gini ~ log(Unemp_prct), data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)
+Log_Unemp <- lm(gini ~ log(Unemp_prct), data = xsection2017)
+
+#Quadratic function:
+as_flextable (lm(gini ~ Unemp_prct + I(Unemp_prct^2), data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)
+Kvad_Unemp <- lm(gini ~ Unemp_prct + I(Unemp_prct^2), data = xsection2017)
+```
+
+## modeller
+
+```{r}
+linear_chg_gdpc |> # creating a linear regression line 
+  ggplot(
+    mapping = aes(
+      x = linear_chg_gdpc$residuals, 
+      y = linear_chg_gdpc$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Log_chg_gdpc |> # creating a logarithmic regression line 
+  ggplot(
+    mapping = aes(
+      x = Log_chg_gdpc$residuals,
+      y = Log_chg_gdpc$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Kvad_chg_gdpc |>
+  ggplot(
+    mapping = aes(
+      x = Kvad_chg_gdpc$residuals,
+      y = Kvad_chg_gdpc$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(
+    linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+```
+
+```{r}
+linear_Workforce |> # creating a linear regression line 
+  ggplot(
+    mapping = aes(
+      x = linear_Workforce$residuals, 
+      y = linear_Workforce$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Log_Workforce |> # creating a logarithmic regression line 
+  ggplot(
+    mapping = aes(
+      x = Log_Workforce$residuals,
+      y = Log_Workforce$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Kvad_Workforce |>
+  ggplot(
+    mapping = aes(
+      x = Kvad_Workforce$residuals,
+      y = Kvad_Workforce$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(
+    linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+```
+
+```{r}
+linear_Pop_km2 |> # creating a linear regression line 
+  ggplot(
+    mapping = aes(
+      x = linear_Pop_km2$residuals, 
+      y = linear_Pop_km2$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Log_Pop_km2 |> # creating a logarithmic regression line 
+  ggplot(
+    mapping = aes(
+      x = Log_Pop_km2$residuals,
+      y = Log_Pop_km2$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Kvad_Pop_km2 |>
+  ggplot(
+    mapping = aes(
+      x = Kvad_Pop_km2$residuals,
+      y = Kvad_Pop_km2$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(
+    linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+```
+
+```{r}
+linear_Pop_km2 |> # creating a linear regression line 
+  ggplot(
+    mapping = aes(
+      x = linear_Pop_km2$residuals, 
+      y = linear_Pop_km2$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Log_Pop_km2 |> # creating a logarithmic regression line 
+  ggplot(
+    mapping = aes(
+      x = Log_Pop_km2$residuals,
+      y = Log_Pop_km2$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Kvad_Pop_km2 |>
+  ggplot(
+    mapping = aes(
+      x = Kvad_Pop_km2$residuals,
+      y = Kvad_Pop_km2$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(
+    linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+```
+
+```{r}
+linear_Unemp |> # creating a linear regression line 
+  ggplot(
+    mapping = aes(
+      x = linear_Unemp$residuals, 
+      y = linear_Unemp$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Log_Unemp |> # creating a logarithmic regression line 
+  ggplot(
+    mapping = aes(
+      x = Log_Unemp$residuals,
+      y = Log_Unemp$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+
+Kvad_Unemp |>
+  ggplot(
+    mapping = aes(
+      x = Kvad_Unemp$residuals,
+      y = Kvad_Unemp$fitted.values
+    )
+  ) +
+  geom_jitter(
+    size = 1,
+    alpha = 0.70
+  ) +
+  geom_smooth(
+    linewidth = 1, 
+    colour = "blue"
+    )+
+  xlab("Population density") +
+  ylab("Gini")
+```
+
+
+# Part B: Exploring Alternative Functional Forms
+
+# Part C: Testing for Heteroskedacity and Discussing Causality
+
+# Part D: Panel Estimates
+
+## Data Prep
+
+```{r}
+PanelData <- left_join(x =readRDS("./data/TidyNUTS2.rds"), y = full_dataset, keep = FALSE, by = join_by(NUTS2, Time)) %>%
+  left_join(y = readRDS("./data/ginigdp.rds"), by = join_by(NUTS2, Time)) %>%
+  mutate(
+    lagged_capita = dplyr::lag(N2GDPCAP),
+    chg_gdpc = (N2GDPCAP - lagged_capita)/lagged_capita,
+    chg_gdpc = 100 * chg_gdpc)%>%
+print()
+```
+
+In the code chunk above we load the long format data containing summed GDP and population per NUTS2 from assignment 1, and join on the additional variables from earlier in assignment 3, in addition to the calculated Gini coefficient based on internal GDP variations per region.
+The dataset containing population density, unemployment rate and total workforce only includes data from 2013 on, so the resulting dataframe (PanelData) contains a few NA-values in the cases where we have GDP data and no additional variables.
+
+```{r}
+#Cleaning our data - NA/NaN/Inf-values will break our model.
+PanelData_clean <- PanelData %>% 
+  filter(!is.na(gini), !is.na(chg_gdpc), !is.nan(chg_gdpc))
+```
+
+```{r}
+#turning our data frame into panel data based on assignment specs.
+pdata_nuts2 <- pdata.frame(PanelData_clean, index = c("NUTS2", "Time"))
+pdata_country <- pdata.frame(PanelData_clean, index = c("Country", "Time"))
+
+```
+
+```{r}
+fe_nuts2 <- plm(
+  gini ~ chg_gdpc,
+  data  = pdata_nuts2,
+  model = "within",
+  effect = "individual"  # NUTS2 FE
+)
+```
+
+# Part E: Use of AI

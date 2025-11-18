@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Kristoffer Tufta and Harald Vika">
+
+<title>Assignment 3:</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="ass3msb104grp2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ass3msb104grp2_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="ass3msb104grp2_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="ass3msb104grp2_files/libs/quarto-html/popper.min.js"></script>
+<script src="ass3msb104grp2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ass3msb104grp2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ass3msb104grp2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ass3msb104grp2_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ass3msb104grp2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ass3msb104grp2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ass3msb104grp2_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="ass3msb104grp2_files/libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+
+<script src="ass3msb104grp2_files/libs/tabwid-1.1.3/tabwid.js"></script>
+
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="ass3msb104grp2.pdf"><i class="bi bi-file-pdf"></i>Typst</a></li><li><a href="ass3msb104grp2.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Assignment 3:</h1>
+<p class="subtitle lead">Regional GDP Inequality in 4 Selected European Economies -</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Kristoffer Tufta and Harald Vika </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Tuesday 18 Nov, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="part-a-testing-development-effects-across-subsets" class="level1">
+<h1>Part A: Testing development effects across subsets</h1>
+<section id="segmenting-our-cross-sectional-data" class="level2">
+<h2 class="anchored" data-anchor-id="segmenting-our-cross-sectional-data">Segmenting our cross-sectional data</h2>
+<section id="population-density" class="level3">
+<h3 class="anchored" data-anchor-id="population-density">Population Density</h3>
+<p>Breaking down our population density into logical segments could help us make a more accurate regression line. If we take a look at our dataset, the data varies a lot, where we have many rural regions with low population density, and then some large city-regions with a much higher density. To define the classifications, we will be taking inspiration from Eurostat’s own definition on urban clusters and density, which divides Europe into:</p>
+<ul>
+<li><em>“Urban centre (high-density cluster): a cluster of contiguous grid cells of 1 km² (excluding diagonals) with a population density of at least 1 500 inhabitants per km² and collectively a minimum population of 50 000 inhabitants after gap-filling</em></li>
+<li><em>Urban cluster (moderate-density cluster): a cluster of contiguous grid cells of 1 km² (including diagonals) with a population density of at least 300 inhabitants per km² and a minimum population of 5 000 inhabitants</em></li>
+<li><em>Rural grid cells: grid cells that aren’t identified as urban centres or as urban clusters.”</em></li>
+</ul>
+<p><span class="citation" data-cites="populati">(<a href="#ref-populati" role="doc-biblioref"><em>Population Density</em>, n.d.</a>)</span></p>
+<p>Their classification is based on continuous cell clusters of one square kilometer cells , whereas ours is for whole NUTS2-regions, but we will be using the same break values.</p>
+<div class="cell" data-title="Effect of GDP change on regional inequality - Sectioned by population density ">
+<div id="tbl-Reg" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-title="Effect of GDP change on regional inequality - Sectioned by population density ">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-Reg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1
+</figcaption>
+<div aria-describedby="tbl-Reg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-4376dca0{}.cl-43602956{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-43685f9a{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-43685fb8{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-43685fc2{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 0.4;background-color:transparent;}.cl-43685fcc{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 0.4;background-color:transparent;}.cl-4368eb4a{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368eb68{width:1.151in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368eb72{width:1.38in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368eb7c{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368eb7d{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368eb86{width:1.151in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368eb90{width:1.38in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368eb9a{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368eba4{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebae{width:1.151in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebaf{width:1.38in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebb8{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebc2{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebcc{width:1.151in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebcd{width:1.38in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebd6{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebe0{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebea{width:1.151in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebf4{width:1.38in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebf5{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ebfe{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec08{width:1.151in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec09{width:1.38in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec12{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec13{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec1c{width:1.151in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec4e{width:1.38in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec58{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec62{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec63{width:1.151in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec6c{width:1.38in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec76{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec80{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec81{width:1.151in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec8a{width:1.38in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4368ec94{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-4376dca0"><thead><tr style="overflow-wrap:break-word;"><th class="cl-4368eb4a"><p class="cl-43685f9a"><span class="cl-43602956"> </span></p></th><th class="cl-4368eb68"><p class="cl-43685fb8"><span class="cl-43602956">High Density</span></p></th><th class="cl-4368eb72"><p class="cl-43685fb8"><span class="cl-43602956">Medium Density</span></p></th><th class="cl-4368eb7c"><p class="cl-43685fb8"><span class="cl-43602956">Rural</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-4368eb7d"><p class="cl-43685fc2"><span class="cl-43602956">(Intercept)</span></p></td><td class="cl-4368eb86"><p class="cl-43685fcc"><span class="cl-43602956">0.0851</span></p></td><td class="cl-4368eb90"><p class="cl-43685fcc"><span class="cl-43602956">0.1367</span></p></td><td class="cl-4368eb9a"><p class="cl-43685fcc"><span class="cl-43602956">0.1370</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368eb7d"><p class="cl-43685fc2"><span class="cl-43602956"></span></p></td><td class="cl-4368eb86"><p class="cl-43685fcc"><span class="cl-43602956">(0.0101)</span></p></td><td class="cl-4368eb90"><p class="cl-43685fcc"><span class="cl-43602956">(0.0397)</span></p></td><td class="cl-4368eb9a"><p class="cl-43685fcc"><span class="cl-43602956">(0.0173)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368eba4"><p class="cl-43685fc2"><span class="cl-43602956">chg_gdpc</span></p></td><td class="cl-4368ebae"><p class="cl-43685fcc"><span class="cl-43602956">-0.0197</span></p></td><td class="cl-4368ebaf"><p class="cl-43685fcc"><span class="cl-43602956">0.0067</span></p></td><td class="cl-4368ebb8"><p class="cl-43685fcc"><span class="cl-43602956">-0.0014</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368ebc2"><p class="cl-43685fc2"><span class="cl-43602956"></span></p></td><td class="cl-4368ebcc"><p class="cl-43685fcc"><span class="cl-43602956">(0.0027)</span></p></td><td class="cl-4368ebcd"><p class="cl-43685fcc"><span class="cl-43602956">(0.0122)</span></p></td><td class="cl-4368ebd6"><p class="cl-43685fcc"><span class="cl-43602956">(0.0031)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368ebe0"><p class="cl-43685fc2"><span class="cl-43602956">Num.Obs.</span></p></td><td class="cl-4368ebea"><p class="cl-43685fcc"><span class="cl-43602956">3</span></p></td><td class="cl-4368ebf4"><p class="cl-43685fcc"><span class="cl-43602956">12</span></p></td><td class="cl-4368ebf5"><p class="cl-43685fcc"><span class="cl-43602956">34</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368ebfe"><p class="cl-43685fc2"><span class="cl-43602956">R2</span></p></td><td class="cl-4368ec08"><p class="cl-43685fcc"><span class="cl-43602956">0.982</span></p></td><td class="cl-4368ec09"><p class="cl-43685fcc"><span class="cl-43602956">0.029</span></p></td><td class="cl-4368ec12"><p class="cl-43685fcc"><span class="cl-43602956">0.006</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368ec13"><p class="cl-43685fc2"><span class="cl-43602956">R2 Adj.</span></p></td><td class="cl-4368ec1c"><p class="cl-43685fcc"><span class="cl-43602956">0.963</span></p></td><td class="cl-4368ec4e"><p class="cl-43685fcc"><span class="cl-43602956">-0.068</span></p></td><td class="cl-4368ec58"><p class="cl-43685fcc"><span class="cl-43602956">-0.025</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368ec62"><p class="cl-43685fc2"><span class="cl-43602956">AIC</span></p></td><td class="cl-4368ec63"><p class="cl-43685fcc"><span class="cl-43602956">-20.9</span></p></td><td class="cl-4368ec6c"><p class="cl-43685fcc"><span class="cl-43602956">-22.7</span></p></td><td class="cl-4368ec76"><p class="cl-43685fcc"><span class="cl-43602956">-74.5</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368ec62"><p class="cl-43685fc2"><span class="cl-43602956">BIC</span></p></td><td class="cl-4368ec63"><p class="cl-43685fcc"><span class="cl-43602956">-23.6</span></p></td><td class="cl-4368ec6c"><p class="cl-43685fcc"><span class="cl-43602956">-21.2</span></p></td><td class="cl-4368ec76"><p class="cl-43685fcc"><span class="cl-43602956">-69.9</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368eba4"><p class="cl-43685fc2"><span class="cl-43602956">Log.Lik.</span></p></td><td class="cl-4368ebae"><p class="cl-43685fcc"><span class="cl-43602956">13.465</span></p></td><td class="cl-4368ebaf"><p class="cl-43685fcc"><span class="cl-43602956">14.338</span></p></td><td class="cl-4368ebb8"><p class="cl-43685fcc"><span class="cl-43602956">40.229</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4368ec80"><p class="cl-43685fc2"><span class="cl-43602956">RMSE</span></p></td><td class="cl-4368ec81"><p class="cl-43685fcc"><span class="cl-43602956">0.00</span></p></td><td class="cl-4368ec8a"><p class="cl-43685fcc"><span class="cl-43602956">0.07</span></p></td><td class="cl-4368ec94"><p class="cl-43685fcc"><span class="cl-43602956">0.07</span></p></td></tr></tbody></table></div>
+<p>Effect of GDP change on regional inequality - Sectioned by population density</p>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Running a regression model on our high density subsection, we get a negative relationship (-0,020) between an increase in GDP per capita and our calculated Gini coefficient. The result is however barely statistically insignificant, with a P-value of 0,08. Running the same model for our medium density section, we see a positive relationship between the two variables. The result is however not statistically significant, with a P-value of 0,59. Our rural section is also not statistically significant, but the relationship flips to negative again.</p>
+</section>
+<section id="workforce" class="level3">
+<h3 class="anchored" data-anchor-id="workforce">Workforce</h3>
+<p>Our data on available workforce is much more linear than for population density, so here we will simply be doing a quantile split into three equally sized classifications: “low”, “medium” and “high” workforce.</p>
+<div class="cell" data-title="Effect of GDP change on regional inequality - Sectioned by workforce availability">
+<div id="tbl-Reg_Workforce" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-title="Effect of GDP change on regional inequality - Sectioned by workforce availability">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-Reg_Workforce-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2
+</figcaption>
+<div aria-describedby="tbl-Reg_Workforce-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-44b8afc6{}.cl-44a3ffcc{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-44ae3078{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-44ae308c{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-44ae3096{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 0.4;background-color:transparent;}.cl-44ae30a0{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 0.4;background-color:transparent;}.cl-44ae87b2{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae87c6{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae87d0{width:1.567in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae87da{width:1.304in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae87e4{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae87ee{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae87f8{width:1.567in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8802{width:1.304in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae880c{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8816{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8817{width:1.567in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8820{width:1.304in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8821{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae882a{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8834{width:1.567in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae883e{width:1.304in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8848{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8852{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae885c{width:1.567in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae885d{width:1.304in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8866{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8867{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8870{width:1.567in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae887a{width:1.304in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8884{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8885{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae888e{width:1.567in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae8898{width:1.304in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae88a2{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae88a3{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae88ac{width:1.567in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae88b6{width:1.304in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae88c0{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae88c1{width:1.338in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae88ca{width:1.567in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-44ae88d4{width:1.304in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-44b8afc6"><thead><tr style="overflow-wrap:break-word;"><th class="cl-44ae87b2"><p class="cl-44ae3078"><span class="cl-44a3ffcc"> </span></p></th><th class="cl-44ae87c6"><p class="cl-44ae308c"><span class="cl-44a3ffcc">High Workforce</span></p></th><th class="cl-44ae87d0"><p class="cl-44ae308c"><span class="cl-44a3ffcc">Medium Workforce</span></p></th><th class="cl-44ae87da"><p class="cl-44ae308c"><span class="cl-44a3ffcc">Low Workforce</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-44ae87e4"><p class="cl-44ae3096"><span class="cl-44a3ffcc">(Intercept)</span></p></td><td class="cl-44ae87ee"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.1039</span></p></td><td class="cl-44ae87f8"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.1371</span></p></td><td class="cl-44ae8802"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.1072</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae87e4"><p class="cl-44ae3096"><span class="cl-44a3ffcc"></span></p></td><td class="cl-44ae87ee"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">(0.0529)</span></p></td><td class="cl-44ae87f8"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">(0.0293)</span></p></td><td class="cl-44ae8802"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">(0.0219)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae880c"><p class="cl-44ae3096"><span class="cl-44a3ffcc">chg_gdpc</span></p></td><td class="cl-44ae8816"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.0099</span></p></td><td class="cl-44ae8817"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">-0.0057</span></p></td><td class="cl-44ae8820"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.0069</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae8821"><p class="cl-44ae3096"><span class="cl-44a3ffcc"></span></p></td><td class="cl-44ae882a"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">(0.0121)</span></p></td><td class="cl-44ae8834"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">(0.0046)</span></p></td><td class="cl-44ae883e"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">(0.0056)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae8848"><p class="cl-44ae3096"><span class="cl-44a3ffcc">Num.Obs.</span></p></td><td class="cl-44ae8852"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">17</span></p></td><td class="cl-44ae885c"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">16</span></p></td><td class="cl-44ae885d"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">17</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae8866"><p class="cl-44ae3096"><span class="cl-44a3ffcc">R2</span></p></td><td class="cl-44ae8867"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.043</span></p></td><td class="cl-44ae8870"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.098</span></p></td><td class="cl-44ae887a"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.091</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae8884"><p class="cl-44ae3096"><span class="cl-44a3ffcc">R2 Adj.</span></p></td><td class="cl-44ae8885"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">-0.021</span></p></td><td class="cl-44ae888e"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.034</span></p></td><td class="cl-44ae8898"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.030</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae88a2"><p class="cl-44ae3096"><span class="cl-44a3ffcc">AIC</span></p></td><td class="cl-44ae88a3"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">-38.8</span></p></td><td class="cl-44ae88ac"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">-25.3</span></p></td><td class="cl-44ae88b6"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">-39.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae88a2"><p class="cl-44ae3096"><span class="cl-44a3ffcc">BIC</span></p></td><td class="cl-44ae88a3"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">-36.3</span></p></td><td class="cl-44ae88ac"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">-23.0</span></p></td><td class="cl-44ae88b6"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">-36.5</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae880c"><p class="cl-44ae3096"><span class="cl-44a3ffcc">Log.Lik.</span></p></td><td class="cl-44ae8816"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">22.401</span></p></td><td class="cl-44ae8817"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">15.639</span></p></td><td class="cl-44ae8820"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">22.494</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-44ae88c0"><p class="cl-44ae3096"><span class="cl-44a3ffcc">RMSE</span></p></td><td class="cl-44ae88c1"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.06</span></p></td><td class="cl-44ae88ca"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.09</span></p></td><td class="cl-44ae88d4"><p class="cl-44ae30a0"><span class="cl-44a3ffcc">0.06</span></p></td></tr></tbody></table></div>
+<p>Effect of GDP change on regional inequality - Sectioned by workforce availability</p>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>When applying our model on the “high available workforce”-subset, we see a positive relationship between GDP change and Gini, although it is not statistically significant.</p>
+<p>For our “medium workforce”, the relationship inverts again, but also here statistically insignificant</p>
+<p>Low available workforce inverts the relationship once again, but also here statistically insignificant.</p>
+</section>
+<section id="unemployment-rate" class="level3">
+<h3 class="anchored" data-anchor-id="unemployment-rate">Unemployment Rate</h3>
+<p>For unemployment rate, we have a pretty continuous spread from 2% to 7%, before we see a few outliers with much higher unemployment rates, relative to the rest of the dataset. We have chosen to section our datasets into three sections: low, medium and high unemployment rates, with breaks being at 0%, &gt;5% and &gt;10%</p>
+<div class="cell" data-title="Effect of GDP change on regional inequality - Sectioned by unemployment rate">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Model has zero degrees of freedom!
+Warning: Model has zero degrees of freedom!</code></pre>
+</div>
+<div id="tbl-Reg_Unemployment" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-title="Effect of GDP change on regional inequality - Sectioned by unemployment rate">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-Reg_Unemployment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3
+</figcaption>
+<div aria-describedby="tbl-Reg_Unemployment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-4601e2e4{}.cl-45e9ac24{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-45f379b6{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-45f379ca{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-45f379d4{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 0.4;background-color:transparent;}.cl-45f379e8{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 0.4;background-color:transparent;}.cl-45f3d212{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d230{width:1.669in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d23a{width:1.898in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d244{width:1.635in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d245{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d24e{width:1.669in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d258{width:1.898in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d259{width:1.635in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d262{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d263{width:1.669in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d276{width:1.898in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d277{width:1.635in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d280{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d28a{width:1.669in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d294{width:1.898in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d29e{width:1.635in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2b2{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2b3{width:1.669in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2bc{width:1.898in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2c6{width:1.635in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2d0{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2da{width:1.669in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2e4{width:1.898in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2e5{width:1.635in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2e6{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2ee{width:1.669in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d2f8{width:1.898in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d302{width:1.635in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d30c{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d30d{width:1.669in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d320{width:1.898in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d321{width:1.635in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d32a{width:0.981in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d32b{width:1.669in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d334{width:1.898in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-45f3d33e{width:1.635in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-4601e2e4"><thead><tr style="overflow-wrap:break-word;"><th class="cl-45f3d212"><p class="cl-45f379b6"><span class="cl-45e9ac24"> </span></p></th><th class="cl-45f3d230"><p class="cl-45f379ca"><span class="cl-45e9ac24">High Unemployment</span></p></th><th class="cl-45f3d23a"><p class="cl-45f379ca"><span class="cl-45e9ac24">Medium Unemployment</span></p></th><th class="cl-45f3d244"><p class="cl-45f379ca"><span class="cl-45e9ac24">Low Unemployment</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-45f3d245"><p class="cl-45f379d4"><span class="cl-45e9ac24">(Intercept)</span></p></td><td class="cl-45f3d24e"><p class="cl-45f379e8"><span class="cl-45e9ac24">-0.0010</span></p></td><td class="cl-45f3d258"><p class="cl-45f379e8"><span class="cl-45e9ac24">0.0844</span></p></td><td class="cl-45f3d259"><p class="cl-45f379e8"><span class="cl-45e9ac24">0.1313</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d245"><p class="cl-45f379d4"><span class="cl-45e9ac24"></span></p></td><td class="cl-45f3d24e"><p class="cl-45f379e8"><span class="cl-45e9ac24"></span></p></td><td class="cl-45f3d258"><p class="cl-45f379e8"><span class="cl-45e9ac24">(0.0331)</span></p></td><td class="cl-45f3d259"><p class="cl-45f379e8"><span class="cl-45e9ac24">(0.0216)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d262"><p class="cl-45f379d4"><span class="cl-45e9ac24">chg_gdpc</span></p></td><td class="cl-45f3d263"><p class="cl-45f379e8"><span class="cl-45e9ac24">0.0152</span></p></td><td class="cl-45f3d276"><p class="cl-45f379e8"><span class="cl-45e9ac24">-0.0009</span></p></td><td class="cl-45f3d277"><p class="cl-45f379e8"><span class="cl-45e9ac24">0.0038</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d280"><p class="cl-45f379d4"><span class="cl-45e9ac24"></span></p></td><td class="cl-45f3d28a"><p class="cl-45f379e8"><span class="cl-45e9ac24"></span></p></td><td class="cl-45f3d294"><p class="cl-45f379e8"><span class="cl-45e9ac24">(0.0039)</span></p></td><td class="cl-45f3d29e"><p class="cl-45f379e8"><span class="cl-45e9ac24">(0.0061)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d2b2"><p class="cl-45f379d4"><span class="cl-45e9ac24">Num.Obs.</span></p></td><td class="cl-45f3d2b3"><p class="cl-45f379e8"><span class="cl-45e9ac24">2</span></p></td><td class="cl-45f3d2bc"><p class="cl-45f379e8"><span class="cl-45e9ac24">9</span></p></td><td class="cl-45f3d2c6"><p class="cl-45f379e8"><span class="cl-45e9ac24">39</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d2d0"><p class="cl-45f379d4"><span class="cl-45e9ac24">R2</span></p></td><td class="cl-45f3d2da"><p class="cl-45f379e8"><span class="cl-45e9ac24">1.000</span></p></td><td class="cl-45f3d2e4"><p class="cl-45f379e8"><span class="cl-45e9ac24">0.008</span></p></td><td class="cl-45f3d2e5"><p class="cl-45f379e8"><span class="cl-45e9ac24">0.010</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d2e6"><p class="cl-45f379d4"><span class="cl-45e9ac24">R2 Adj.</span></p></td><td class="cl-45f3d2ee"><p class="cl-45f379e8"><span class="cl-45e9ac24"></span></p></td><td class="cl-45f3d2f8"><p class="cl-45f379e8"><span class="cl-45e9ac24">-0.134</span></p></td><td class="cl-45f3d302"><p class="cl-45f379e8"><span class="cl-45e9ac24">-0.016</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d30c"><p class="cl-45f379d4"><span class="cl-45e9ac24">AIC</span></p></td><td class="cl-45f3d30d"><p class="cl-45f379e8"><span class="cl-45e9ac24"></span></p></td><td class="cl-45f3d320"><p class="cl-45f379e8"><span class="cl-45e9ac24">-16.2</span></p></td><td class="cl-45f3d321"><p class="cl-45f379e8"><span class="cl-45e9ac24">-84.1</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d30c"><p class="cl-45f379d4"><span class="cl-45e9ac24">BIC</span></p></td><td class="cl-45f3d30d"><p class="cl-45f379e8"><span class="cl-45e9ac24"></span></p></td><td class="cl-45f3d320"><p class="cl-45f379e8"><span class="cl-45e9ac24">-15.6</span></p></td><td class="cl-45f3d321"><p class="cl-45f379e8"><span class="cl-45e9ac24">-79.1</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d262"><p class="cl-45f379d4"><span class="cl-45e9ac24">Log.Lik.</span></p></td><td class="cl-45f3d263"><p class="cl-45f379e8"><span class="cl-45e9ac24"></span></p></td><td class="cl-45f3d276"><p class="cl-45f379e8"><span class="cl-45e9ac24">11.117</span></p></td><td class="cl-45f3d277"><p class="cl-45f379e8"><span class="cl-45e9ac24">45.030</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-45f3d32a"><p class="cl-45f379d4"><span class="cl-45e9ac24">RMSE</span></p></td><td class="cl-45f3d32b"><p class="cl-45f379e8"><span class="cl-45e9ac24">0.00</span></p></td><td class="cl-45f3d334"><p class="cl-45f379e8"><span class="cl-45e9ac24">0.07</span></p></td><td class="cl-45f3d33e"><p class="cl-45f379e8"><span class="cl-45e9ac24">0.08</span></p></td></tr></tbody></table></div>
+<p>Effect of GDP change on regional inequality - Sectioned by unemployment rate</p>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The model for the “high unemployment” section showed remarkable predictive power, with an R-squared of 1, but we have opted out of including this in our table due to the small amount of observations. The high unemployment section ony contained two observations which were statistical outliers, relative to the rest of the data. While isolating these outliers from the rest of the data could help produce a better linear model, using the linear model on the isolated “high” set proved unproductive. We have presented the results from the data.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-46a61f6c{}.cl-468d5126{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-468d513a{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:italic;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-46976be8{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-46976bfc{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-4697f9be{width:2.323in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697f9dc{width:0.88in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697f9dd{width:1.287in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697f9f0{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697f9f1{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa04{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa0e{width:2.323in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa18{width:0.88in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa19{width:1.287in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa22{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa2c{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa2d{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa40{width:2.323in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa4a{width:0.88in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa4b{width:1.287in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa5e{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa5f{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa68{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa7c{width:2.323in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa86{width:0.88in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fa90{width:1.287in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697faa4{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697faa5{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697faae{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fab8{width:2.323in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fac2{width:0.88in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fac3{width:1.287in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697facc{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fad6{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fae0{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fae1{width:2.323in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697faea{width:0.88in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697faf4{width:1.287in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697faf5{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fafe{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4697fb08{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-46a61f6c"><thead><tr style="overflow-wrap:break-word;"><th class="cl-4697f9be"><p class="cl-46976be8"><span class="cl-468d5126"></span></p></th><th class="cl-4697f9dc"><p class="cl-46976bfc"><span class="cl-468d5126">Estimate</span></p></th><th class="cl-4697f9dd"><p class="cl-46976bfc"><span class="cl-468d5126">Standard Error</span></p></th><th class="cl-4697f9f0"><p class="cl-46976bfc"><span class="cl-468d5126">t value</span></p></th><th class="cl-4697f9f1"><p class="cl-46976bfc"><span class="cl-468d5126">Pr(&gt;|t|)</span></p></th><th class="cl-4697fa04"><p class="cl-46976be8"><span class="cl-468d5126"></span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-4697fa0e"><p class="cl-46976be8"><span class="cl-468d5126">(Intercept)</span></p></td><td class="cl-4697fa18"><p class="cl-46976bfc"><span class="cl-468d5126">0.135</span></p></td><td class="cl-4697fa19"><p class="cl-46976bfc"><span class="cl-468d5126">0.017</span></p></td><td class="cl-4697fa22"><p class="cl-46976bfc"><span class="cl-468d5126">8.054</span></p></td><td class="cl-4697fa2c"><p class="cl-46976bfc"><span class="cl-468d5126">0.0000</span></p></td><td class="cl-4697fa2d"><p class="cl-46976be8"><span class="cl-468d5126">***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4697fa40"><p class="cl-46976be8"><span class="cl-468d5126">chg_gdpc</span></p></td><td class="cl-4697fa4a"><p class="cl-46976bfc"><span class="cl-468d5126">-0.001</span></p></td><td class="cl-4697fa4b"><p class="cl-46976bfc"><span class="cl-468d5126">0.003</span></p></td><td class="cl-4697fa5e"><p class="cl-46976bfc"><span class="cl-468d5126">-0.309</span></p></td><td class="cl-4697fa5f"><p class="cl-46976bfc"><span class="cl-468d5126">0.7586</span></p></td><td class="cl-4697fa68"><p class="cl-46976be8"><span class="cl-468d5126">   </span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4697fa40"><p class="cl-46976be8"><span class="cl-468d5126">Density_classMedium Density</span></p></td><td class="cl-4697fa4a"><p class="cl-46976bfc"><span class="cl-468d5126">0.021</span></p></td><td class="cl-4697fa4b"><p class="cl-46976bfc"><span class="cl-468d5126">0.025</span></p></td><td class="cl-4697fa5e"><p class="cl-46976bfc"><span class="cl-468d5126">0.841</span></p></td><td class="cl-4697fa5f"><p class="cl-46976bfc"><span class="cl-468d5126">0.4050</span></p></td><td class="cl-4697fa68"><p class="cl-46976be8"><span class="cl-468d5126">   </span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4697fa7c"><p class="cl-46976be8"><span class="cl-468d5126">Density_classHigh Density</span></p></td><td class="cl-4697fa86"><p class="cl-46976bfc"><span class="cl-468d5126">-0.118</span></p></td><td class="cl-4697fa90"><p class="cl-46976bfc"><span class="cl-468d5126">0.045</span></p></td><td class="cl-4697faa4"><p class="cl-46976bfc"><span class="cl-468d5126">-2.600</span></p></td><td class="cl-4697faa5"><p class="cl-46976bfc"><span class="cl-468d5126">0.0126</span></p></td><td class="cl-4697faae"><p class="cl-46976be8"><span class="cl-468d5126">  *</span></p></td></tr></tbody><tfoot><tr style="overflow-wrap:break-word;"><td colspan="6" class="cl-4697fab8"><p class="cl-46976bfc"><span class="cl-468d513a">Signif. codes: 0 &lt;= '***' &lt; 0.001 &lt; '**' &lt; 0.01 &lt; '*' &lt; 0.05</span></p></td></tr><tr style="overflow-wrap:break-word;"><td colspan="6" class="cl-4697fae1"><p class="cl-46976be8"><span class="cl-468d5126"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td colspan="6" class="cl-4697fae1"><p class="cl-46976be8"><span class="cl-468d5126">Residual standard error: 0.07526 on 45 degrees of freedom</span></p></td></tr><tr style="overflow-wrap:break-word;"><td colspan="6" class="cl-4697fae1"><p class="cl-46976be8"><span class="cl-468d5126">Multiple R-squared: 0.1584, Adjusted R-squared: 0.1023</span></p></td></tr><tr style="overflow-wrap:break-word;"><td colspan="6" class="cl-4697fae1"><p class="cl-46976be8"><span class="cl-468d5126">F-statistic: 2.824 on 45 and 3 DF, p-value: 0.0493</span></p></td></tr></tfoot></table></div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>    NUTS2             Country              Time              N2GDPSUM    
+ Length:2           Length:2           Length:2           Min.   : 9032  
+ Class :character   Class :character   Class :character   1st Qu.:10862  
+ Mode  :character   Mode  :character   Mode  :character   Median :12692  
+                                                          Mean   :12692  
+                                                          3rd Qu.:14523  
+                                                          Max.   :16353  
+                                                                         
+    N2POPSUM          N2GDPCAP     lagged_capita      chg_gdpc    
+ Min.   :1123545   Min.   : 8038   Min.   : 7669   Min.   :4.813  
+ 1st Qu.:1180944   1st Qu.: 9050   1st Qu.: 8560   1st Qu.:5.507  
+ Median :1238343   Median :10062   Median : 9451   Median :6.200  
+ Mean   :1238343   Mean   :10062   Mean   : 9451   Mean   :6.200  
+ 3rd Qu.:1295741   3rd Qu.:11074   3rd Qu.:10342   3rd Qu.:6.894  
+ Max.   :1353140   Max.   :12085   Max.   :11233   Max.   :7.587  
+                                                                  
+     Count           gini          Geo_Labels           Pop_km2    
+ Min.   :7.00   Min.   :0.07237   Length:2           Min.   :56.4  
+ 1st Qu.:7.25   1st Qu.:0.08293   Class :character   1st Qu.:56.4  
+ Median :7.50   Median :0.09350   Mode  :character   Median :56.4  
+ Mean   :7.50   Mean   :0.09350                      Mean   :56.4  
+ 3rd Qu.:7.75   3rd Qu.:0.10406                      3rd Qu.:56.4  
+ Max.   :8.00   Max.   :0.11463                      Max.   :56.4  
+                                                     NA's   :1     
+   Workforce       Unemp_prct          Density_class Workforce_Class
+ Min.   :442.4   Min.   :10.8   Rural         :1     Low   :2       
+ 1st Qu.:475.0   1st Qu.:12.1   Medium Density:0     Medium:0       
+ Median :507.6   Median :13.4   High Density  :0     High  :0       
+ Mean   :507.6   Mean   :13.4   NA's          :1                    
+ 3rd Qu.:540.2   3rd Qu.:14.7                                       
+ Max.   :572.8   Max.   :16.0                                       
+                                                                    
+ Unemp_Class
+ Low   :0   
+ Medium:0   
+ High  :2   
+            
+            
+            
+            </code></pre>
+</div>
+</div>
+<p>In the “medium unemployment” subsection, we see that there is a small, negative, but statistically insignificant relationship between increasing GDP per capita and regional inequality.</p>
+<p>For our “low unemployment” subset however, the relationship between GDPC increase and regional inequality is positive, but still statistically insignificant.</p>
+</section>
+</section>
+<section id="subset-analysis-discussion" class="level2">
+<h2 class="anchored" data-anchor-id="subset-analysis-discussion">Subset Analysis Discussion</h2>
+<p>Segmenting the data reveals that the estimated relationship between GDP growth and regional inequality changes depending on which type of region we are looking at. For population density, the rural group shows a very small and statistically weak negative coefficient. Medium-density regions display a similarly weak pattern, also statistically insignificant. Only the high-density subset shows a noticeably larger negative estimate, but it still lacks statistical significance. In addition to this, several of the regions in the “high density”-category include only one NUTS2-region, automatically making these regions more equal. In other words, the relationship between GDP growth and regional GDP inequality becomes stronger in magnitude as density increases, but we don’t have enough evidence to treat this as a consistent pattern.</p>
+<p>The workforce availability segments show a similar story. Regions with lower workforce availability exhibit weaker estimates, while the high-workforce subset shows a somewhat stronger association. Still, uncertainty is large, and none of the segments are statistically significant.</p>
+<p>For unemployment segments, the differences are also mostly about magnitude. Low-unemployment regions tend to have smaller estimated effects, while medium and high segments show slightly larger coefficients. Again, none of these are precise enough to draw conclusions, but the variation itself suggests that the relationship between development and inequality isn’t identical across labour-market contexts.</p>
+<p>Overall, the subset analysis doesn’t point to a single, stable development–inequality relationship across all our regional types. Instead, we see small differences in coefficient size across population density, unemployment, and workforce segments, with no segment showing a statistically significant effect.</p>
+</section>
+</section>
+<section id="part-b-exploring-alternative-functional-forms" class="level1">
+<h1>Part B: Exploring Alternative Functional Forms</h1>
+</section>
+<section id="part-c-testing-for-heteroskedacity-and-discussing-causality" class="level1">
+<h1>Part C: Testing for Heteroskedacity and Discussing Causality</h1>
+</section>
+<section id="part-d-panel-estimates" class="level1">
+<h1>Part D: Panel Estimates</h1>
+<section id="data-prep" class="level2">
+<h2 class="anchored" data-anchor-id="data-prep">Data Prep</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,272 × 14
+   NUTS2 Country Time  N2GDPSUM N2POPSUM N2GDPCAP Geo_Labels Pop_km2 Workforce
+   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+ 1 CH01  CH      2000        0   1294974       0  &lt;NA&gt;            NA        NA
+ 2 CH01  CH      2001        0   1303557       0  &lt;NA&gt;            NA        NA
+ 3 CH01  CH      2002        0   1317017       0  &lt;NA&gt;            NA        NA
+ 4 CH01  CH      2003        0   1331131       0  &lt;NA&gt;            NA        NA
+ 5 CH01  CH      2004        0   1348106       0  &lt;NA&gt;            NA        NA
+ 6 CH01  CH      2005        0   1362754       0  &lt;NA&gt;            NA        NA
+ 7 CH01  CH      2006        0   1376306       0  &lt;NA&gt;            NA        NA
+ 8 CH01  CH      2007        0   1389988       0  &lt;NA&gt;            NA        NA
+ 9 CH01  CH      2008    70043.  1408796   49718. &lt;NA&gt;            NA        NA
+10 CH01  CH      2009    73176.  1437592   50902. &lt;NA&gt;            NA        NA
+# ℹ 1,262 more rows
+# ℹ 5 more variables: Unemp_prct &lt;dbl&gt;, Count &lt;int&gt;, gini &lt;dbl&gt;,
+#   lagged_capita &lt;dbl&gt;, chg_gdpc &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>In the code chunk above we load the long format data containing summed GDP and population per NUTS2 from assignment 1, and join on the additional variables from earlier in assignment 3, in addition to the calculated Gini coefficient based on internal GDP variations per region. The dataset containing population density, unemployment rate and total workforce only includes data from 2013 on, so the resulting dataframe (PanelData) contains a few NA-values in the cases where we have GDP data and no additional variables.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 478 × 14
+   NUTS2 Country Time  N2GDPSUM N2POPSUM N2GDPCAP Geo_Labels   Pop_km2 Workforce
+   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;
+ 1 CH01  CH      2013    97780.  1519189   64363. Région léma…    185       814.
+ 2 CH01  CH      2014   100644.  1545817   65108. Région léma…    188.      827 
+ 3 CH01  CH      2015   114380.  1570594   72826. Région léma…    191.      845.
+ 4 CH01  CH      2016   115579.  1593839   72516. Région léma…    194.      860.
+ 5 CH01  CH      2017   112846.  1613522   69938. Région léma…    196.      868 
+ 6 CH01  CH      2018   114219.  1629841   70080. Région léma…    198.      883 
+ 7 CH01  CH      2019   119751.  1642580   72904. Région léma…    200.      883.
+ 8 CH01  CH      2020   119446.  1654751   72184. Région léma…    200.      878.
+ 9 CH01  CH      2021   129251.  1669608   77414. Région léma…    201.      883.
+10 CH02  CH      2013   107372.  1788791   60025. Espace Mitt…    184.     1029 
+# ℹ 468 more rows
+# ℹ 5 more variables: Unemp_prct &lt;dbl&gt;, Count &lt;int&gt;, gini &lt;dbl&gt;,
+#   lagged_capita &lt;dbl&gt;, chg_gdpc &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>NA, NaN, and infinite values will break our panel estimation, so to be able to run this, we first have to clean up our data. We do this by telling R to drop NA-values. The output can be seen in the table above. Note that the table now only contains complete rows, so observations before 2013 have been dropped as we lack information about the additional variables here.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in pdata.frame(PanelData_clean, index = c("Country", "Time")): duplicate couples (id-time) in resulting pdata.frame
+ to find out which, use, e.g., table(index(your_pdataframe), useNA = "ifany")</code></pre>
+</div>
+</div>
+</section>
+<section id="panel-estimates" class="level2">
+<h2 class="anchored" data-anchor-id="panel-estimates">Panel Estimates</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Model Formula: gini ~ chg_gdpc
+
+Coefficients:
+  chg_gdpc 
+0.00022037 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-483f3426{}.cl-4824cbe0{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-482edefa{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-482edf2c{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-482f7bee{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-482f7c16{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-482f7c2a{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-482f7c3e{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-482f7c52{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-482f7c5c{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-482f7c66{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-482f7c70{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-482f7c7a{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-482f7c84{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-483f3426"><thead><tr style="overflow-wrap:break-word;"><th class="cl-482f7bee"><p class="cl-482edefa"><span class="cl-4824cbe0"> </span></p></th><th class="cl-482f7c16"><p class="cl-482edf2c"><span class="cl-4824cbe0">Country FE</span></p></th><th class="cl-482f7c16"><p class="cl-482edf2c"><span class="cl-4824cbe0">Year FE</span></p></th><th class="cl-482f7c16"><p class="cl-482edf2c"><span class="cl-4824cbe0">NUTS2 FE</span></p></th><th class="cl-482f7c16"><p class="cl-482edf2c"><span class="cl-4824cbe0">NUTS2 &amp; Year FE</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-482f7c2a"><p class="cl-482edefa"><span class="cl-4824cbe0">chg_gdpc</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.000</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.000</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.000</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-482f7c52"><p class="cl-482edefa"><span class="cl-4824cbe0"></span></p></td><td class="cl-482f7c5c"><p class="cl-482edf2c"><span class="cl-4824cbe0">(0.000)</span></p></td><td class="cl-482f7c5c"><p class="cl-482edf2c"><span class="cl-4824cbe0">(0.000)</span></p></td><td class="cl-482f7c5c"><p class="cl-482edf2c"><span class="cl-4824cbe0">(0.000)</span></p></td><td class="cl-482f7c5c"><p class="cl-482edf2c"><span class="cl-4824cbe0">(0.000)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-482f7c66"><p class="cl-482edefa"><span class="cl-4824cbe0">Num.Obs.</span></p></td><td class="cl-482f7c70"><p class="cl-482edf2c"><span class="cl-4824cbe0">478</span></p></td><td class="cl-482f7c70"><p class="cl-482edf2c"><span class="cl-4824cbe0">478</span></p></td><td class="cl-482f7c70"><p class="cl-482edf2c"><span class="cl-4824cbe0">478</span></p></td><td class="cl-482f7c70"><p class="cl-482edf2c"><span class="cl-4824cbe0">478</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-482f7c2a"><p class="cl-482edefa"><span class="cl-4824cbe0">R2</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.005</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.009</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.102</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.109</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-482f7c2a"><p class="cl-482edefa"><span class="cl-4824cbe0">R2 Adj.</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-0.003</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-0.014</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-0.003</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-0.019</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-482f7c2a"><p class="cl-482edefa"><span class="cl-4824cbe0">AIC</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-1106.9</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-1069.1</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-2379.3</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-2397.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-482f7c2a"><p class="cl-482edefa"><span class="cl-4824cbe0">BIC</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-1098.5</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-1060.8</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-2370.9</span></p></td><td class="cl-482f7c3e"><p class="cl-482edf2c"><span class="cl-4824cbe0">-2388.6</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-482f7c7a"><p class="cl-482edefa"><span class="cl-4824cbe0">RMSE</span></p></td><td class="cl-482f7c84"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.08</span></p></td><td class="cl-482f7c84"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.08</span></p></td><td class="cl-482f7c84"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.02</span></p></td><td class="cl-482f7c84"><p class="cl-482edf2c"><span class="cl-4824cbe0">0.02</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</section>
+</section>
+<section id="part-e-use-of-ai" class="level1 unnumbered">
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Part E: Use of AI</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-populati" class="csl-entry" role="listitem">
+<em>Population density</em>. (n.d.). <a href="https://education.nationalgeographic.org/resource/population-density">https://education.nationalgeographic.org/resource/population-density</a>
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

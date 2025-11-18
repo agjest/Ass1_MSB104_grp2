@@ -262,6 +262,26 @@ gdp_pop <- left_join(
   select(Country, everything())
 ```
 
+```{r}
+#| eval: false
+#| fig-cap: "Joined, tidied datasets"
+# Joining the two datasets
+tidyjoined <- left_join(tidy_demo, tidy_econ, by = join_by(Geo_Labels, Time), keep = FALSE)
+# Mutating to add column for GDP per capita.
+ tidyjoined <- tidyjoined %>%
+    mutate(
+    `GDP Million EUR` = as.numeric(`GDP Million EUR`),
+    Population = as.numeric(Population),
+    GDP_Capita = (`GDP Million EUR` * 1000000) / Population
+  )
+ tidyjoined <- tidyjoined %>%
+   mutate(Country = substr(Geo_Codes, 1, 2), .before = 2)
+ tidyjoined <- tidyjoined %>%
+   mutate( NUTS2 = (str_sub(Geo_Codes, start= 1L, end = 4L)), .before = 2)
+as_flextable(tidyjoined)
+saveRDS(tidyjoined, "data/tidyjoined.rds")
+```
+
 
 ## Descriptive analysis of the "GDP per capita"-table
 
@@ -437,6 +457,22 @@ ginigdp <- gdp_pop %>%
     .groups = "drop"
     )
 ```
+
+```{r}
+#| eval: false
+#| label: tbl-ginigdp
+#| fig-cap: "Regional inequality - full table"
+ginigdp <- tidyjoined %>%
+  na.omit() %>%
+  group_by(NUTS2, Time)%>%
+  summarise( Count = n(),
+            gini = gini.wtd(GDP_Capita, weights = Population))
+as_flextable(ginigdp)
+saveRDS(ginigdp, "data/ginigdp.rds")
+```
+
+
+
 
 ```{r}
 #| label: tbl-ginigdp-CH
