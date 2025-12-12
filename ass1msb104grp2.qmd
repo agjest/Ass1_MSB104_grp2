@@ -1,7 +1,7 @@
 ---
 title: "Assignment 1:"
 subtitle:  "Regional GDP Inequality in 4 Selected European Economies"
-author: "Kristoffer Tufta and Harald Vika"
+author: "Kristoffer Tufta and Harald Bjarne Vika"
 date: last-modified
 date-format: "dddd D MMM, YYYY"
 csl: apa7.csl
@@ -27,6 +27,9 @@ bibliography: references.bib
 
 ```{r}
 #| label: setup
+#| include: FALSE
+#| message: false
+#| warning: false
 library (tidyverse)
 library (PxWebApiData)
 library(readxl)
@@ -34,6 +37,7 @@ library(purrr)
 library(dineq)
 library(psych)
 library(flextable)
+library(lubridate)
 # define not in
 `%nin%` <- Negate(`%in%`)
 ```
@@ -55,17 +59,16 @@ We will below calculate the GDP per capita and explore regional inequality throu
 
 ### GDP per Region
 
-In @lst-read-in-data, we use the `read_excel` function from the package `readxl` to read the downloaded GDP data from Eurostat into R.
-We store it in memory as a tibble called `gdp_wide`.
-
 ```{r}
-#| lst-label: lst-read-in-data
-#| lst-cap: Code for reading data from Excel workbooks into R.
+#| lst-label: lst-import
+#| lst-cap: "Code for reading data from Excel workbooks into R."
+
 # Har valg display settings hos eurostat slik at
 # jeg får med NUTS3 code og ingen flags mellom 
 # data kolonnene. Med litt hjelp klarer read_excel()
 # å lese inn dataene riktig. Jeg vil foreslå å
 # endre navn til gdp_wide
+
 gdp_wide <- read_excel(
   path = "./Data/gdp.xlsx", 
   sheet = "Sheet 1",
@@ -76,6 +79,9 @@ gdp_wide <- read_excel(
   col_type = c(rep("text", 2), rep("numeric", 24))
 )
 ```
+
+In @lst-import, we use the `read_excel` function from the package `readxl` to read the downloaded GDP data from Eurostat into R.
+We store it in memory as a tibble called `gdp_wide`.
 
 ```{r}
 #| eval: false
@@ -102,7 +108,7 @@ gdp_wide  |>
   ) |> 
   filter(str_sub(NUTS3, 1, 2) == "DE") |> 
   arrange(year, NUTS3) |> 
-  rename(`GDP (mill. €)` = gdp) |> 
+  rename("GDP (mill. €)" = gdp) |> 
   head(n = 15) |> 
   as_flextable(
     show_coltype = FALSE,
@@ -204,10 +210,6 @@ pop_wide  |>
   delete_part("footer")
 ```
 
-
-
-
-
 ```{r}
 # Making raw_demo into long format.
 # Nå pop_wide into pop
@@ -230,7 +232,6 @@ pop |>
   filter(str_sub(NUTS3, 1, 2) %nin% c("CH", "DE", "HR", "IE")) |> 
   dim()
 ```
-
 
 ## GDP Per capita:
 
@@ -280,7 +281,6 @@ tidyjoined <- left_join(tidy_demo, tidy_econ, by = join_by(Geo_Labels, Time), ke
 as_flextable(tidyjoined)
 saveRDS(tidyjoined, "data/tidyjoined.rds")
 ```
-
 
 ## Descriptive analysis of the "GDP per capita"-table
 
@@ -422,7 +422,6 @@ all$header$content$data[[1]][1] = 'All ("CH", "DE", "HR", "IE")'
 all
 ```
 
-
 ## Using light levels as a predictor of economic development
 
 In this assignment we use reported GDP and demographic data from Eurostat to determine regional inequality in a selection of countries, but what can you do when regional income data isn’t readily available?
@@ -446,6 +445,9 @@ We will get this in all cases where there is only one NUTS3-region per NUTS2-reg
 The code chunk below does all this and prints the first 10 results.
 
 ```{r}
+#| label: tbl-ginigdp
+#| tbl-cap: "Calculated Gini coefficients per NUTS2-region - full table"
+
 # Beregner gini for NUTS2 regioner
 ginigdp <- gdp_pop %>%
   na.omit %>%
@@ -458,8 +460,13 @@ ginigdp <- gdp_pop %>%
 ```
 
 ```{r}
+saveRDS(ginigdp, "data/ginigdp.rds")
+```
+
+
+```{r}
 #| eval: false
-#| label: tbl-ginigdp
+#| label: tbl-ginigdp-B
 #| fig-cap: "Regional inequality - full table"
 ginigdp <- tidyjoined %>%
   na.omit() %>%
@@ -492,7 +499,6 @@ ginigdp |>
   delete_part("footer")
 ```
 
-
 ```{r}
 #| label: tbl-ginigdp-DE2
 #| tbl-cap: 'Change i gini-coefficients for the NUTS2 regions in the NUTS1 region "DE2" (Bavaria) in Germany. (N3 number of NUTS3 regions.)'
@@ -513,8 +519,6 @@ ginigdp |>
   theme_booktabs() |> 
   delete_part("footer")
 ```
-
-
 
 ```{r}
 #| label: tbl-ginigdp-HR
@@ -560,6 +564,7 @@ ginigdp |>
   theme_booktabs() |> 
   delete_part("footer")
 ```
+
 If we need to reference the tables we can do it like this @tbl-ginigdp-CH, @tbl-ginigdp-DE2, @tbl-ginigdp-HR and @tbl-ginigdp-IE.
 
 ## Visualizing the Gini coefficient
@@ -602,8 +607,6 @@ ggplot(
   geom_line() +
   labs(x = "Year", y = "Gini-Coefficient")
 ```
-
-
 
 @fig-Switzerland shows low Gini-coefficients for each region, with a tendency to stay below 0.20.
 There is seemingly a divide into two groups one of which has a higher gini-coefficient than the other.
@@ -755,7 +758,6 @@ oneN2 <- ginigdp |>
   pull()
 ```
 
-
 ```{r}
 #| label: fig-Germany-ag3
 #| fig-cap: "Regional GDP Inequality in Germany - NUTS1 regions with multiple NUTS2 regions."
@@ -817,8 +819,6 @@ ginigdp %>%
   labs(x = "Year", y = "Gini-Coefficient") +
   theme(legend.position = "none")
 ```
-
-
 
 Germany has been very consistent at reporting data and we have data for the full period, but as @fig-Germany shows, we have a little bit of an information overload on our hands.
 Germany consists of up to 38 NUTS2 regions which is crowding the graph, making it very hard to read.

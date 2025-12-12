@@ -1,7 +1,7 @@
 ---
 title: "Assignment 3:"
-subtitle:  "Regional GDP Inequality in 4 Selected European Economies - "
-author: "Kristoffer Tufta and Harald Vika"
+subtitle:  "Regional GDP Inequality in 4 Selected European Economies - Segmented Data and Alternative Models."
+author: "Kristoffer Tufta and Harald Bjarne Vika"
 date: last-modified
 date-format: "dddd D MMM, YYYY"
 csl: apa7.csl
@@ -46,10 +46,15 @@ library(plm)
 ```{r}
 #Reading prewritten datasets
 full_dataset <- readRDS("./data/tidyjoined2.rds")
-xsection2017<- readRDS("./data/Gini_EUdata_full.rds") 
+xsection2017<- readRDS("./data/Gini_EUdata_full.rds") %>%
+  ungroup()
 ```
 
 ## Segmenting our cross-sectional data
+
+In this assignment we will be taking the datasets we prepared in the last assignment, and break them down into relevant subsets or "classes".
+After classing each observation, we will then run a linear regression model on the data, filtered by each variable class, to see if the results vary from subset to subset.
+Like before, we will be testing the effect a change in GDP per capita per NUTS2-region has on regional GDP inequality.
 
 ### Population Density
 
@@ -64,6 +69,10 @@ To define the classifications, we will be taking inspiration from Eurostat's own
 [@populati]
 
 Their classification is based on continuous cell clusters of one square kilometer cells , whereas ours is for whole NUTS2-regions, but we will be using the same break values.
+
+-   1500 persons per km2: High Density.
+-   300 persons per km2: Medium Density.
+-   \<300 persons per km2: Rural.
 
 ```{r}
 #Population density
@@ -81,7 +90,7 @@ xsection2017 <- xsection2017 %>%
 
 ```{r}
 #| label: tbl-Reg
-#| fig-cap: "Effect of GDP change on regional inequality - Sectioned by population density "
+#| tbl-cap: "Effect of GDP change on regional inequality - Sectioned by population density "
 #| Title: "Effect of GDP change on regional inequality - Sectioned by population density "
 #Reg. Pop density
 lmregHD <- xsection2017 %>%
@@ -119,11 +128,12 @@ Our data on available workforce is much more linear than for population density,
 ```{r}
 #Workforce
 xsection2017 <- xsection2017 %>%
-  mutate(Workforce_Class = cut(Workforce,
-                           breaks = quantile(Workforce, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE),
-                           include.lowest = TRUE,
-                           labels = c("Low", "Medium", "High")))
-
+  mutate(Workforce_Class = cut(
+    Workforce,
+    breaks = quantile(Workforce, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE), 
+    labels = c("Low", "Medium", "High")
+    )
+    )
 ```
 
 ```{r}
@@ -159,10 +169,8 @@ modelsummary(
 ```
 
 When applying our model on the "high available workforce"-subset, we see a positive relationship between GDP change and Gini, although it is not statistically significant.
-
-For our "medium workforce", the relationship inverts again, but also here statistically insignificant
-
-Low available workforce inverts the relationship once again, but also here statistically insignificant.
+For our "medium workforce", the relationship inverts again, before it flips again for low available workforce.
+Both medium and low workforce are statistically insignificant.
 
 ### Unemployment Rate
 
@@ -202,7 +210,6 @@ lmregUnemp_Low <- xsection2017 %>%
 
 modelsummary(
   models = list(
-    "High Unemployment" = lmregUnemp_High,
     "Medium Unemployment" = lmregUnemp_Medium,
     "Low Unemployment" = lmregUnemp_Low
   ),
@@ -217,18 +224,20 @@ modelsummary(
 The model for the "high unemployment" section showed remarkable predictive power, with an R-squared of 1, but we have opted out of including this in our table due to the small amount of observations.
 The high unemployment section ony contained two observations which were statistical outliers, relative to the rest of the data.
 While isolating these outliers from the rest of the data could help produce a better linear model, using the linear model on the isolated "high" set proved unproductive.
-We have presented the results from the data.
+For the sake of transparency, we have presented a summary of the sectioned data below.
+
+
+#### High Unemployment Summarized
 
 ```{r}
-xsection2017 %>%
-    lm(formula = gini ~ chg_gdpc + Density_class) %>%
-  as_flextable()
-```
-
-```{r}
+#| label: tbl-Summary
+#| tbl-cap: "High Unemployment Summarized"
+#| Title: "High Unemployment Summarized"
+#| warning: false
 xsection2017 %>%
 filter(Unemp_Class == "High") %>%
-  summary(output = "Flextable")
+  datasummary_skim(output = "flextable", type = "numeric")
+
 ```
 
 In the "medium unemployment" subsection, we see that there is a small, negative, but statistically insignificant relationship between increasing GDP per capita and regional inequality.
@@ -255,150 +264,168 @@ Again, none of these are precise enough to draw conclusions, but the variation i
 Overall, the subset analysis doesn’t point to a single, stable development–inequality relationship across all our regional types.
 Instead, we see small differences in coefficient size across population density, unemployment, and workforce segments, with no segment showing a statistically significant effect.
 
+# Part B Exploring Alternative Functional forms
 
-## Part B Exploring Alternative Functional forms
+Functional form exploration: Here we are chosing two of three alternative functional forms logarithmic, quadratic and cubic, to see which is a better fit.
+We will then justify our choice with theoretical or empirical reasoning.
 
--Functional form exploration: Here we are chosing two of three alternative functional forms logarithmic, quadratic and cubic, to see which is a better fit.
+We have chosen the logarithmic and quadratic function forms for each variable that will be tested up to regional inequality.
+The focus will be on model two and three to test if they are , as the first model is the linear function, and not the alternative functional forms.
+
+## Alternative Models - Labour Force
 
 ```{r}
-# Creating different functional forms for change in gdpc
-# Linear funksjon
-as_flextable (lm(gini ~ chg_gdpc, data = xsection2017
-))%>%
-  colformat_double(j = 2, digits = 6)
-linear_chg_gdpc <- lm(gini ~ chg_gdpc, data = xsection2017)
+#| warning: false
+#| label: tbl-linreg1
+#| tbl-cap: "Linear regression statistics for labour force"
 
-# Logarithmic:
-as_flextable (lm(gini ~ log(chg_gdpc), data = xsection2017
-))%>%
-  colformat_double(j = 2, digits = 6)
-Log_chg_gdpc <- lm(gini ~ log(chg_gdpc), data = xsection2017)
+# Creating different functional forms with the variables regional development and labour force
+# Linear function:
 
-#Quadratic:
-as_flextable (lm(gini ~ chg_gdpc + I(chg_gdpc^2), data = xsection2017
-))%>%
-  colformat_double(j = 2, digits = 6)
-Kvad_chg_gdpc <- lm(gini ~ chg_gdpc + I(chg_gdpc^2), data = xsection2017)
+as_flextable (lm(gini ~ chg_gdpc + Workforce, data = xsection2017
+)) |>
+  colformat_double(j = 2, digits = 6)%>%
+  colformat_double(j = 3, digits = 6)
+linear_Workforce <- lm(gini ~ chg_gdpc + Workforce, data = xsection2017)
 ```
 
-Modell 1 og 2 passer best for denne variabelen, forklar For the employment rate we have chosen the logarithmic and the quadratic functions to see if they provide a better fit.
-Model one gives a p-verdi for hele modellen på en 0.0018 noe som viser at modellen forklarer en variasjon i repsonsvariablene.
-Så får vi en R²=0.27 som sier at modellen har en 27% forklaringskraft på den The first model is the logarithmic function which gives a estimated value of 0.233016 when all explanatory variables are 0
-
 ```{r}
-# Creating different functional forms for Labour force 
-# Linear function
-as_flextable(lm(gini ~ Workforce, data = xsection2017))
-linear_Workforce <- lm(gini ~ Workforce, data = xsection2017)
-
+#| warning: false
+#| label: tbl-logreg1
+#| tbl-cap: "Logarithmic regression statistics for labour force" 
 # Logarithmic function:
-as_flextable (lm(gini ~ log(Workforce), data = xsection2017
+as_flextable (lm(gini ~ log(chg_gdpc) + Workforce, data = xsection2017
 ))%>%
-  colformat_double(j = 2, digits = 6)
-Log_Workforce <- lm(gini ~ log(Workforce), data = xsection2017)
-
-#Quadratic function:
-as_flextable (lm(gini ~ Workforce + I(Workforce^2), data = xsection2017
-))%>%
-  colformat_double(j = 2, digits = 6)
-Kvad_Workforce <- lm(gini ~ Workforce + I(Workforce^2), data = xsection2017)
+  colformat_double(j = 2, digits = 6) %>%
+  colformat_double(j = 3, digits = 6) %>%
+  set_caption(caption = "Logarithmic regression statistics for labour force")
+Log_Workforce <- lm(gini ~ log(chg_gdpc) + Workforce, data = xsection2017)
 ```
 
-Modell 1 og modell 2 er de jeg kan bruke men begge har en svært lav forklaringskraft på hvordan workforce påvirker den regional ulikeheten, kan dette være fordi det er der forskjeller i fra den lave til høy?
 
 ```{r}
-# Creating different functional forms for Population density 
-# Linear function
-as_flextable(lm(gini ~ Pop_km2, data = xsection2017))
-linear_Pop_km2 <- (lm(gini ~ Pop_km2, data = xsection2017))
+#| warning: false
+#| label: tbl-quadreg1
+#| tbl-cap: "Quadratic regression statistics for labour force" 
+#Quadratic function:
+as_flextable (lm(gini ~ chg_gdpc + I(chg_gdpc^2) + Workforce, data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6) %>%
+  colformat_double(j = 3, digits = 6) %>%
+set_caption(caption = "Quadratic regression statistics for labour force")
+Kvad_Workforce <- lm(gini ~ chg_gdpc + I(chg_gdpc^2) + Workforce, data = xsection2017)
+```
 
+Model 2 stands out as it is the most empirically robust of them.
+The model shows a significant effect of the growth variable of regional development, and has a higher adjusted R-squared and a lower residual standard error then the other models.
+Model 2 as a whole has a more explanatory power then the others and can provide a stronger empirical support.
+
+The other models has a weaker empirical support, as none of the variables are significant, has any better explanatory power and has a lower prediction error then model 2.
+Using a cubic function would only give more variables and stretch the numbers even more, giving it a even weaker model.
+
+Model 2 stands out as it is the most empirically robust of them.
+The model shows a significant effect of the growth variable of regional development, and has a higer adjusted R-squared and a lower residual standard error then the other models.
+Model 2 as a whole has a more explanatory power then the others and can provide a stronger empirical support.
+
+The other models has a weaker empirical support, as none of the variables are significant, has any better explanatory power and has a lower prediction error then model 2.
+Using a cubic function would only give more variables and stretch the numbers even more, giving it a even weaker model.
+
+## Alternative Models - Population Density
+```{r}
+#| warning: false
+#| label: tbl-linreg2
+#| tbl-cap: "Linear regression statistics for population density" 
+# Creating different functional forms with the variables regional development and population density
+
+as_flextable(lm(gini ~ Pop_km2 + chg_gdpc, data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6) %>%
+  colformat_double(j = 3, digits = 6) %>% 
+  set_caption(caption = "Linear regression statistics for population density")
+linear_Pop_km2 <- (lm(gini ~ Pop_km2 + chg_gdpc, data = xsection2017))
+```
+
+
+```{r}
+#| warning: false
+#| label: tbl-logreg2
+#| tbl-cap: "Logarithmic regression statistics for population density" 
 # Logarithmic function:
-as_flextable (lm(gini ~ log(Pop_km2), data = xsection2017
+as_flextable (lm(gini ~ log(chg_gdpc) + Pop_km2, data = xsection2017
 ))%>%
-  colformat_double(j = 2, digits = 6)
-Log_Pop_km2 <- lm(gini ~ log(Pop_km2), data = xsection2017)
-
-#Quadratic function:
-as_flextable (lm(gini ~ Pop_km2 + I(Pop_km2^2), data = xsection2017
-))%>%
-  colformat_double(j = 2, digits = 6)
-Kvad_Pop_km2 <- lm(gini ~ Pop_km2 + I(Pop_km2^2), data = xsection2017)
+  colformat_double(j = 2, digits = 6) %>%
+  colformat_double(j = 3, digits = 6) %>% 
+  set_caption(caption = "Logarithmic regression statistics for population density")
+Log_Pop_km2 <- lm(gini ~ log(chg_gdpc) + Pop_km2, data = xsection2017)
 ```
 
+
 ```{r}
-# Creating different functional forms for Population density 
+#| warning: false
+#| label: tbl-quadreg2
+#| tbl-cap: "Quadratic regression statistics for population density" 
+#Quadratic function:
+as_flextable (lm(gini ~ chg_gdpc + I(chg_gdpc^2) + Pop_km2, data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)%>%
+  colformat_double(j = 3, digits = 6)%>%
+  set_caption(caption = "Quadratic regression statistics for population density")
+Kvad_Pop_km2 <- lm(gini ~ chg_gdpc + I(chg_gdpc^2) + Pop_km2, data = xsection2017)
+```
+
+Model 2 gives the most clear empirical basis to use.
+It it both statistic significant and has a better explanatory ability then the other models.
+The F-test is highly significant and adjusted R-squared gives a moderate explanation of the variables.
+Model 3 gives a insight into a potential non-linear effect of chg_gdpc, with the quadratic term being significant, but with the low adjusted R-squared, it gives off a low explanatory power.
+
+## Alternative Models - Unemployment 
+
+```{r}
+#| warning: false
+#| label: tbl-linreg3
+#| tbl-cap: "Linear regression statistics for Unemployment rate"
+# Creating different functional forms with the variables regional development and Unemployment rate
 # Linear function
-as_flextable(lm(gini ~ Unemp_prct, data = xsection2017))
-linear_Unemp <- (lm(gini ~ Unemp_prct, data = xsection2017))
-
-# Logarithmic function:
-as_flextable (lm(gini ~ log(Unemp_prct), data = xsection2017
-))%>%
-  colformat_double(j = 2, digits = 6)
-Log_Unemp <- lm(gini ~ log(Unemp_prct), data = xsection2017)
-
-#Quadratic function:
-as_flextable (lm(gini ~ Unemp_prct + I(Unemp_prct^2), data = xsection2017
-))%>%
-  colformat_double(j = 2, digits = 6)
-Kvad_Unemp <- lm(gini ~ Unemp_prct + I(Unemp_prct^2), data = xsection2017)
+as_flextable(lm(gini ~ chg_gdpc + Unemp_prct, data = xsection2017))%>%
+  colformat_double(j = 2, digits = 6) %>%
+  colformat_double(j = 3, digits = 6) %>%
+  set_caption(caption = "Linear regression statistics for Unemployment rate")
+linear_Unemp <- (lm(gini ~ chg_gdpc + Unemp_prct, data = xsection2017))
 ```
 
-## modeller
 
 ```{r}
-linear_chg_gdpc |> # creating a linear regression line 
-  ggplot(
-    mapping = aes(
-      x = linear_chg_gdpc$residuals, 
-      y = linear_chg_gdpc$fitted.values
-    )
-  ) +
-  geom_jitter(
-    size = 1,
-    alpha = 0.70
-  ) +
-  geom_smooth(linewidth = 1, 
-    colour = "blue"
-    )+
-  xlab("Population density") +
-  ylab("Gini")
-
-Log_chg_gdpc |> # creating a logarithmic regression line 
-  ggplot(
-    mapping = aes(
-      x = Log_chg_gdpc$residuals,
-      y = Log_chg_gdpc$fitted.values
-    )
-  ) +
-  geom_jitter(
-    size = 1,
-    alpha = 0.70
-  ) +
-  geom_smooth(linewidth = 1, 
-    colour = "blue"
-    )+
-  xlab("Population density") +
-  ylab("Gini")
-
-Kvad_chg_gdpc |>
-  ggplot(
-    mapping = aes(
-      x = Kvad_chg_gdpc$residuals,
-      y = Kvad_chg_gdpc$fitted.values
-    )
-  ) +
-  geom_jitter(
-    size = 1,
-    alpha = 0.70
-  ) +
-  geom_smooth(
-    linewidth = 1, 
-    colour = "blue"
-    )+
-  xlab("Population density") +
-  ylab("Gini")
+#| warning: false
+#|label: tbl-logreg3
+#|tbl-cap: "Logarithmic regression statistics for Unemployment rate" 
+# Logarithmic function:
+as_flextable (lm(gini ~ log(chg_gdpc) + Unemp_prct, data = xsection2017
+)) %>%
+  colformat_double(j = 2, digits = 6)%>%
+  colformat_double(j = 3, digits = 6)%>%
+  set_caption(caption = "Logarithmic regression statistics for Unemployment rate")
+Log_Unemp <- lm(gini ~ log(chg_gdpc) + Unemp_prct, data = xsection2017)
 ```
+
+
+```{r}
+#|label: tbl-quadreg3
+#|tbl-cap: "Quadratic regression statistics for Unemployment rate"
+#|warning: FALSE
+#Quadratic function:
+as_flextable (lm(gini ~ chg_gdpc + I(chg_gdpc^2) + Unemp_prct, data = xsection2017
+))%>%
+  colformat_double(j = 2, digits = 6)%>%
+  colformat_double(j = 3, digits = 6) %>%
+  set_caption(caption = "Quadratic regression statistics for Unemployment rate")
+Kvad_Unemp <- lm(gini ~ chg_gdpc + I(chg_gdpc^2) + Unemp_prct, data = xsection2017)
+```
+
+The Log-linear model preforms better here as well, in both statistically and empirically.
+As the other tests above, its shows that it has a higher explanatory power with its multiple R-squared of 0.27 and adjusted R-squared to be 0.23.
+It also has the lowest residual standard error and the variable log(chg_gdpc) is strongly significant, which in turn says that the model is statistically significant according to the F-test.
+
+## Visualising Alternative Models
 
 ```{r}
 linear_Workforce |> # creating a linear regression line 
@@ -415,8 +442,11 @@ linear_Workforce |> # creating a linear regression line
   geom_smooth(linewidth = 1, 
     colour = "blue"
     )+
-  xlab("Population density") +
-  ylab("Gini")
+  xlab("Labour Force") +
+  ylab("Gini")+
+  labs(
+    title = "Linear model of workforce"
+  )
 
 Log_Workforce |> # creating a logarithmic regression line 
   ggplot(
@@ -432,10 +462,13 @@ Log_Workforce |> # creating a logarithmic regression line
   geom_smooth(linewidth = 1, 
     colour = "blue"
     )+
-  xlab("Population density") +
-  ylab("Gini")
+  xlab("Labour Force") +
+  ylab("Gini")+
+  labs(
+    title = "Logarithmic model of workforce"
+  )
 
-Kvad_Workforce |>
+Kvad_Workforce |> # creating a quadratic regression line
   ggplot(
     mapping = aes(
       x = Kvad_Workforce$residuals,
@@ -450,8 +483,11 @@ Kvad_Workforce |>
     linewidth = 1, 
     colour = "blue"
     )+
-  xlab("Population density") +
-  ylab("Gini")
+  xlab("Labour Force") +
+  ylab("Gini")+
+  labs(
+    title = "Quadratic model of workforce"
+  )
 ```
 
 ```{r}
@@ -470,7 +506,10 @@ linear_Pop_km2 |> # creating a linear regression line
     colour = "blue"
     )+
   xlab("Population density") +
-  ylab("Gini")
+  ylab("Gini")+
+  labs(
+    title = "Linear model of Population density"
+  )
 
 Log_Pop_km2 |> # creating a logarithmic regression line 
   ggplot(
@@ -487,9 +526,12 @@ Log_Pop_km2 |> # creating a logarithmic regression line
     colour = "blue"
     )+
   xlab("Population density") +
-  ylab("Gini")
+  ylab("Gini")+
+  labs(
+    title = "Logarithmic model of Population density"
+  )
 
-Kvad_Pop_km2 |>
+Kvad_Pop_km2 |> # creating a quadratic regression line
   ggplot(
     mapping = aes(
       x = Kvad_Pop_km2$residuals,
@@ -505,61 +547,10 @@ Kvad_Pop_km2 |>
     colour = "blue"
     )+
   xlab("Population density") +
-  ylab("Gini")
-```
-
-```{r}
-linear_Pop_km2 |> # creating a linear regression line 
-  ggplot(
-    mapping = aes(
-      x = linear_Pop_km2$residuals, 
-      y = linear_Pop_km2$fitted.values
-    )
-  ) +
-  geom_jitter(
-    size = 1,
-    alpha = 0.70
-  ) +
-  geom_smooth(linewidth = 1, 
-    colour = "blue"
-    )+
-  xlab("Population density") +
-  ylab("Gini")
-
-Log_Pop_km2 |> # creating a logarithmic regression line 
-  ggplot(
-    mapping = aes(
-      x = Log_Pop_km2$residuals,
-      y = Log_Pop_km2$fitted.values
-    )
-  ) +
-  geom_jitter(
-    size = 1,
-    alpha = 0.70
-  ) +
-  geom_smooth(linewidth = 1, 
-    colour = "blue"
-    )+
-  xlab("Population density") +
-  ylab("Gini")
-
-Kvad_Pop_km2 |>
-  ggplot(
-    mapping = aes(
-      x = Kvad_Pop_km2$residuals,
-      y = Kvad_Pop_km2$fitted.values
-    )
-  ) +
-  geom_jitter(
-    size = 1,
-    alpha = 0.70
-  ) +
-  geom_smooth(
-    linewidth = 1, 
-    colour = "blue"
-    )+
-  xlab("Population density") +
-  ylab("Gini")
+  ylab("Gini")+
+  labs(
+    title = "Quadratic model of Population density"
+  )
 ```
 
 ```{r}
@@ -577,8 +568,10 @@ linear_Unemp |> # creating a linear regression line
   geom_smooth(linewidth = 1, 
     colour = "blue"
     )+
-  xlab("Population density") +
-  ylab("Gini")
+  xlab("Unemployment rate") +
+  ylab("Gini")+
+  labs(
+    title = "Linear model of Unemployment rate")
 
 Log_Unemp |> # creating a logarithmic regression line 
   ggplot(
@@ -594,10 +587,12 @@ Log_Unemp |> # creating a logarithmic regression line
   geom_smooth(linewidth = 1, 
     colour = "blue"
     )+
-  xlab("Population density") +
-  ylab("Gini")
+  xlab("Unemployment rate") +
+  ylab("Gini")+
+  labs(
+    title = "Logarithmic model of Population density")
 
-Kvad_Unemp |>
+Kvad_Unemp |> # creating a quadratic regression line
   ggplot(
     mapping = aes(
       x = Kvad_Unemp$residuals,
@@ -612,14 +607,135 @@ Kvad_Unemp |>
     linewidth = 1, 
     colour = "blue"
     )+
-  xlab("Population density") +
-  ylab("Gini")
+  xlab("Unemployment rate") +
+  ylab("Gini") +
+  labs(
+    title = "Quadratic model of Unemployment rate")
 ```
 
+### Interpretation of the results
 
-# Part B: Exploring Alternative Functional Forms
+We begin with the analysis of workforce and regional development.
+The linear model offers very limited explanatory power, with an adjusted R-squared=0.03457 and an F-test indicating the model is not statistically significant.
+Neither workforce nor regional development emerges as a strong predictor.
+Workforce shows a small positive effect, but it is too weak to draw meaningful conclusions.
+In contrast, the logarithmic model performs much better.
+Regional development becomes highly significant, showing a clear negative association with the dependent variable, suggesting that proportional changes in growth have a robust impact.
+Workforce still shows a small positive effect, but its significance remains uncertain.
+The logarithmic model’s adjusted R-squared rises to 0.2521, the residual standard error decreases, and the F-test is highly significant, indicating the predictors collectively improve the model.
+The quadratic model, however, performs worse: the adjusted R-squared drops to 0.06199, residual error rises, and the F-test is not significant.
+Although the negative quadratic term hints at a potential curved relationship, the lack of significance prevents confident interpretation.
+Overall, the logarithmic specification provides the most reliable representation for workforce and regional development.
+
+Next, we examine population density and regional development.
+In the linear model, population density is significant p=0.0228, but GDP change is not p=0.6166.
+Adjusted R-squared is only 0.07234, and the overall F-test is not significant p=0.0668, indicating weak explanatory power.
+The logarithmic model performs considerably better: log-transformed GDP change shows a highly significant negative effect, while population density also contributes negatively.
+Adjusted R-squared increases to 0.3314, and the F-test is highly significant p=0.0001, demonstrating a stronger fit.
+The quadratic model captures some patterns adjusted R-adjusted=0.1606, F-test p=0.0123 but leaves much variation unexplained.
+
+Finally, we analyse unemployment rate and regional development.
+In the linear model, unemployment shows a small but significant negative effect, while regional development has no impact, resulting in limited predictive power.
+The logarithmic model highlights a small, significant negative effect of log-transformed GDP change, with unemployment insignificant.
+Adjusted R² rises to 0.2336, indicating better explanatory power than the linear model.
+The quadratic model performs worse, with coefficients and adjusted R-squared lowered to 0.09633 and limited significance.
+
+Across all analyses, the logarithmic functional form consistently provides the strongest explanatory power, offering the most reliable insights into the relationship between regional development and inequality, while linear and quadratic specifications are generally weaker.
 
 # Part C: Testing for Heteroskedacity and Discussing Causality
+
+```{r}
+#| label: tbl-BPtest
+#| tbl-cap: Breusch-Pagan test of our linear models
+#Running a BPtest of all regressions at once
+bp_results <- list(
+
+#Population density
+  
+"High Density"  = lmregHD,
+"Medium Density" = lmregMD,
+"Rural" = lmregRural,
+
+#Workforce
+
+"High Workforce" = lmregWF_High,
+"Medium Workforce" = lmregWF_Medium,
+"Low Workforce" = lmregWF_Low,
+
+#Unemployment
+
+"High Unemployment" = lmregUnemp_High,
+"Medium Unemployment" = lmregUnemp_Medium,
+"Low Unemployment" = lmregUnemp_Low
+) |>
+  lapply(bptest) |>
+  lapply(broom::tidy) |>
+  bind_rows(.id = "Model") |>
+  mutate(
+    statistic = round(statistic, 3),
+    p.value  = round(p.value, 3)
+  )
+
+as_flextable(bp_results)%>%
+  colformat_double(j = 3, digits = 3)
+
+```
+
+In @tbl-BPtest we are running a Breusch-Pagan test on our linear models, to test for heteroskedasticity in our datasets.
+Luckily for us, the linear models mostly seem to have P-values above 0,05, except for our "medium density"-subset , where the p-value (0,011) rejects the homoskedasticity assumption.
+The low-unemployment subset shows weak evidence of heteroskedasticity (p = 0,074), while the remaining segments, including all workforce-based groups and the rural density subset, display no statistically significant deviation from constant variance.
+For the high-unemployment group, the BP test did not return a valid statistic - likely due to too few observations in the subset - so we cannot draw any conclusion there.
+
+```{r}
+#| label: tbl-AltBPtest
+#| tbl-cap: Breusch-Pagan test of our alternative models
+#Running a BPtest of all alternative models at once
+bp_results_alt <- list(
+#Quad
+  "Quadratic Pop. Density" = Kvad_Pop_km2,
+  "Quadratic Unemployment" = Kvad_Unemp,
+  "Quadratic Workforce" = Kvad_Workforce,
+
+#Log
+
+"Logarithmic Pop. Density" = Log_Pop_km2,
+  "Logarithmic Unemployment" = Log_Unemp,
+  "Logarithmic Workforce" = Log_Workforce
+
+
+) |>
+  lapply(bptest) |>
+  lapply(broom::tidy) |>
+  bind_rows(.id = "Model") |>
+  mutate(
+    statistic = round(statistic, 3),
+    p.value  = round(p.value, 3)
+  )
+
+as_flextable(bp_results_alt)%>%
+  colformat_double(j = 3, digits = 3)
+
+```
+
+For the alternative functional forms tested in @tbl-AltBPtest, none of the BP tests show significant heteroskedasticity.
+Both the quadratic and logarithmic models have p-values far above the 0.05 threshold, meaning the constant-variance assumption is not rejected.
+
+## Causality
+
+Neither our linear or alternative regression models can be taken as proof of causality between growth in GDP per capita and regional GDP inequality.
+All we can say is that there is little evidence of a clear relationship between GDP growth and regional inequality in this dataset.
+Whether growth actually affects inequality is a different question, and our models are not designed to answer it.
+
+Firstly, we face serious omitted variable issues.
+Many things that influence regional inequality also influence economic growth: industrial restructuring, migration flows, demographic shifts, regional policy interventions and local labour market shocks.
+These factors are not included in our models, so their effects end up buried in the error term.
+
+We also have the classic problem of reverse causality.
+Regions with rising inequality might experience slower growth later on, for example because of political tensions, social instability, or different investment patterns.
+If inequality affects growth and not just the other way around, our estimates will be biased in both directions.
+
+We end up with a similar conclusion to the causality question to that of @lessmann2017.
+To improve causal interpretation, we would need either better identification strategies (like using instrument variables to adjust for confounders) or richer datasets Without that, the safest conclusion is that our results could describe correlations, not causal effects.
 
 # Part D: Panel Estimates
 
@@ -631,8 +747,7 @@ PanelData <- left_join(x =readRDS("./data/TidyNUTS2.rds"), y = full_dataset, kee
   mutate(
     lagged_capita = dplyr::lag(N2GDPCAP),
     chg_gdpc = (N2GDPCAP - lagged_capita)/lagged_capita,
-    chg_gdpc = 100 * chg_gdpc)%>%
-print()
+    chg_gdpc = 100 * chg_gdpc)
 ```
 
 In the code chunk above we load the long format data containing summed GDP and population per NUTS2 from assignment 1, and join on the additional variables from earlier in assignment 3, in addition to the calculated Gini coefficient based on internal GDP variations per region.
@@ -641,14 +756,13 @@ The dataset containing population density, unemployment rate and total workforce
 ```{r}
 #Cleaning our data - NA/NaN/Inf-values will break our model.
 PanelData_clean <- PanelData %>% 
-  filter(!is.na(gini), !is.na(chg_gdpc), !is.nan(chg_gdpc))
+  na.omit()
 ```
 
 ```{r}
 #turning our data frame into panel data based on assignment specs.
 pdata_nuts2 <- pdata.frame(PanelData_clean, index = c("NUTS2", "Time"))
 pdata_country <- pdata.frame(PanelData_clean, index = c("Country", "Time"))
-
 ```
 
 ```{r}
@@ -658,6 +772,99 @@ fe_nuts2 <- plm(
   model = "within",
   effect = "individual"  # NUTS2 FE
 )
+
 ```
 
+```{r}
+fe_year <- plm(
+  gini ~ chg_gdpc,
+  data  = pdata_nuts2,
+  model = "within",
+  effect = "time"
+)
+```
+
+```{r}
+fe_country <- plm(
+  gini ~ chg_gdpc,
+  data  = pdata_country,
+  model = "within",
+  effect = "individual"  # Country FE
+)
+```
+
+```{r}
+fe_twoway <- plm(
+  gini ~ chg_gdpc,
+  data  = pdata_nuts2,
+  model = "within",
+  effect = "twoways"     # NUTS2 + Year FE
+)
+
+```
+
+## Panel Estimation Analysis
+
+```{r}
+#Summarizing our panel estimates
+modelsummary(
+  models = list(
+    "Country FE"      = fe_country,
+    "Year FE"         = fe_year,
+    "NUTS2 FE"        = fe_nuts2,
+    "NUTS2 & Year FE" = fe_twoway
+  ),
+  output = "flextable",
+  fmt = 5
+) 
+
+```
+
+Across all four specifications the estimated effect of GDP per capita-change on our calculated Gini-coefficient remains extremely small, ranging from 0,00017 to 0,00024, and none of the models show statistical significance.
+This means that once we exploit the time dimension and control for stable characteristics of regions and years, year-over-year-development does not display a strong empirical association with changes in regional inequality, at least in our sample.
+
+The most notable difference across all specifications can be seen in the fit of the models.
+The country-FE and year-FE models produce very low R-squared values (0,005 and 0,009), not unlike what we observed in the cross-sectional results in part A.
+These models only remove average differences across countries or across years, and the remaining variation is still affected by structural regional differences.
+Once we move to NUTS2 fixed effects, the within-R-squared jumps to 0,102, and with two-way fixed effects to 0,109.
+This indicates that permanent regional characteristics and economic shocks that affect the whole continent explain a large share of the variation in inequality, while short-term growth in GDP itself explains very little.
+The RMSE (root mean squared error) also drops substantially under these specifications, reflecting the fact that controlling for region and year effects dramatically improves model fit.
+
+Compared to the cross-sectional estimates from Part A, the panel coefficients are much smaller in magnitude and far more stable across specifications.
+This shrinking of the effect was expected.
+Our cross-sectional regression mixes together fundamentally different regions, urban vs rural, east vs. west, which can exaggerate the estimated relationship.
+Panel fixed effects remove these traits and forces the model to rely only on intra-regional variation over time.
+
+To conclude, the panel results suggest that annual GDP growth is not a strong predictor of movements in regional GDP inequality in our selected countries.
+
+## Panel Estimation Discussion
+
+Overall: the panel results are good at examining whether regional inequality is affected by growth in GDP per capita.
+The fixed-effects approach is better at comparing "apples to apples", and "Berlin to Berlin" (instead of "Berlin to rural Croatia") than our initial cross-section was.
+
+Firstly: the model is trying to explain changes in inequality inside each region over time.
+But inequality barely moves from year to year in most European regions.
+Our calculated Gini-coefficient is a slow, structural variable.
+Meanwhile, growth in GDP can jump around from one year to the next.
+When one variable barely moves and the other jumps up and down, it may be difficult for a model to find any stable relationship between them.
+The tiny coefficients we get are not very surprising, as the model just doesn’t have much to work with.
+
+The jump in RMSE when switching from country FE to NUTS2 FE mostly reflects the model learning the characteristics of each region.
+Once we give each region its own baseline level of inequality, the model can fit the data much better.
+This means the fixed effects clean up the part of the variation that GDP never had anything to do with in the first place.
+Data gaps also affect our results.
+Because we had to remove a lot of NA, NaN, and Inf values, some regions and some years end up with fewer observations, which can skew the results.
+
+Overall: the panel results are good at examining whether regional inequality is affected by growth in GDP per capita.
+The fixed-effects approach is better at comparing "apples to apples", and "Berlin to Berlin" (instead of "Berlin to rural Croatia") than our initial cross-section was.
+Still, while the results are useful, the fixed-effects approach also removes other variables that barely move around year-over-year, like population density, available workforce and unemployment rates.
+We should not treat our panel estimation as stronger evidence for one hypothesis or the other, just as a different angle of viewing things, with it's own set of limitations.
+
 # Part E: Use of AI
+
+In this assignment we have used AI to ask controlling questions and constructive judging of the text and the codes used, including interpreting the results from our models.
+The language models used were ChatGPT 3.5 and ChatGPT 5.1.
+Our prompt strategy revolved around describing the assignment to chatGPT, and asking it for feedback underways.
+For model interpretation, we uploaded our rendered html-documents, which included the results from our models, and asked for assistance in interpretation.
+It was immportant for us to actually learn, and not just outsource the thinking to an AI, so where ChatGPT presented us with new concepts or R-functions, we asked it to educate us and explain, step by step, what each new concept/function was and how it could be used.
+All code has been verified by humans, ethically sourced, and has not been tested on animals.

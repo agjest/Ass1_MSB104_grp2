@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Kristoffer Tufta and Harald Bjarne Vika">
+
+<title>Assignment 4:</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="ass4msb104grp2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ass4msb104grp2_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="ass4msb104grp2_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="ass4msb104grp2_files/libs/quarto-html/popper.min.js"></script>
+<script src="ass4msb104grp2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ass4msb104grp2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ass4msb104grp2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ass4msb104grp2_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ass4msb104grp2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ass4msb104grp2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ass4msb104grp2_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="ass4msb104grp2.pdf"><i class="bi bi-file-pdf"></i>Typst</a></li><li><a href="ass4msb104grp2.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Assignment 4:</h1>
+<p class="subtitle lead">Regional GDP Inequality in 4 Selected European Economies - Synthesised Results.</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Kristoffer Tufta and Harald Bjarne Vika </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Friday 5 Dec, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="assignment-4-consolidation-of-key-findings" class="level1">
+<h1>Assignment 4 Consolidation of Key findings</h1>
+<section id="abstract" class="level2">
+<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<section id="background" class="level3">
+<h3 class="anchored" data-anchor-id="background">Background</h3>
+<p>Regional development in Europe is uneven, not just between the different national economies but within the regions themselves. Many NUTS2 regions contain both strong and weak local economies, and the internal spread of GDP can be wide. These internal differences influence local labour markets, municipal finances, service provision, and long-term opportunities for residents. At the same time, regional inequality is often discussed at the national level, even though the more practical challenges, uneven access to jobs, productivity gaps, and infrastructure differences, play out inside regions. Understanding what drives internal regional GDP disparities is therefore important for anyone trying to make territorial development more balanced.</p>
+</section>
+<section id="objectives" class="level3">
+<h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
+<p>Assignments 1, 2, and 3 focused on different parts of this problem.</p>
+<ul>
+<li><strong>Assignment 1</strong> built the dataset: collecting GDP, population, unemployment, and information at the NUTS2 level, and calculated the intra-regional GDP inequality using a population-weighted Gini coefficient.</li>
+<li><strong>Assignment 2</strong> analysed a cross-section of the year 2017 to see whether regional development, measured as GDP per capita growth, is linked to internal GDP inequality. It also looked at whether this relationship differs across different segments of population density, workforce size, and unemployment rates.</li>
+<li><strong>Assignment 3</strong> extended the analysis to a full panel, estimating fixed-effects models to test whether the development–inequality relationship holds once we control for time-invariant regional characteristics and common yearly shocks. We also evaluated alternative functional forms and ran diagnostic tests to check model robustness.</li>
+</ul>
+<p>Across all three assignments, the overarching research question has been the same: <strong><em>Does faster regional development lead to more balanced internal GDP distribution?</em></strong></p>
+</section>
+<section id="significance" class="level3">
+<h3 class="anchored" data-anchor-id="significance">Significance</h3>
+<p>This topic is relevant because internal regional disparities affect everyday economic conditions more directly than national averages. When only a few municipalities drive most of a region’s GDP, the surrounding areas may face weaker labour markets, lower tax bases, and fewer opportunities due to the “economic field of gravity” of the dominating region centralizing economic activity towards itself, even if the region as a whole looks like it performs well.<br>
+Policymakers may then assume that economic growth alone may “spill over” (or “trickle down”, if you will) and reduce these gaps. Our work tests that assumption with comparable data across four European countries. By combining cross-sectional, segmented, and fixed-effects panel approaches, the study provides a clearer view of whether short-term development actually improves internal regional balance, or whether structural characteristics dominate the pattern. This helps clarify where growth policies are sufficient, and where more targeted, place-based strategies are needed.</p>
+</section>
+</section>
+<section id="literature-review---kristoffer" class="level2">
+<h2 class="anchored" data-anchor-id="literature-review---kristoffer">Literature Review - Kristoffer</h2>
+<section id="previous-work" class="level3">
+<h3 class="anchored" data-anchor-id="previous-work">Previous Work</h3>
+<p>A central reference point for our work is <span class="citation" data-cites="lessmann2017">Lessmann &amp; Seidel (<a href="#ref-lessmann2017" role="doc-biblioref">2017</a>)</span>, who shows that the link between economic development and regional inequality is not linear. Their results suggest something closer to an inverted-U (and in some cases N-shaped) pattern, where inequality tends to rise in the middle stages of development before falling again in high-income settings. This gives a natural expectation that fast-growing regions may show lower inequality if they are already relatively advanced, while poorer or developing regions might move in the opposite direction. Their work is also relevant because they rely on both traditional data and satellite-based luminosity data, which shows that inequality can be meaningfully captured even when official data is patchy — a recurring issue even in Eurostat datasets, as we experienced directly.</p>
+<p>Eurostat’s own methodological documentation is also part of the relevant background. Their notes on missing values help explain why regional GDP and population numbers are incomplete in certain years. These gaps arise from reclassification of regions, confidentiality rules, or delayed reporting. Understanding why these “quirks” happen is important because it directly affects our results.</p>
+<p>For our segmentation work, we also build on Eurostat’s definitions of population-density classes used for identifying rural areas, urban clusters, and high-density urban centres. While Eurostat’s approach operates at the 1 km² continuous grid-cell level, their breakpoints (300 and 1500 people per square kilometer) give a practical structure for grouping NUTS2 regions by density. This matters because urban density is often correlated with both productivity and access to public-services, and therefore a likely influence when it comes to regional GDP inequality.</p>
+</section>
+<section id="research-gap" class="level3">
+<h3 class="anchored" data-anchor-id="research-gap">Research Gap</h3>
+<p>While there is existing literature on national GDP inequality trends and on broader development patterns, there is less focus on how short-term growth shocks play out inside individual NUTS2 regions, and even less on whether the effect of growth differs across structural categories like urban density, unemployment rates, or workforce size. Our assignments aim to examine exactly that: to see whether any of these structural categories influence GDP inequality in NUTS2-regions, and if so, to what degree.</p>
+</section>
+</section>
+<section id="data-and-methodology" class="level2">
+<h2 class="anchored" data-anchor-id="data-and-methodology">Data and Methodology</h2>
+<p>Before we present our analyse and values from our data, we must first see where our source data came from, their codes and any explanation on why some of the datasets a missing data. Then we will go through the approach on our assignments and how we analysed the data we collected and transformed.</p>
+<section id="data-sources" class="level3">
+<h3 class="anchored" data-anchor-id="data-sources">Data Sources</h3>
+<p>Primary data refers to information collected firsthand by the researcher directly from original source. It is raw and unprocessed, typically gathered through methods such as surveys, interviews and observations. The data provided by Eurostat can be considered primary data because it is originally collected through official surveys and processed following established methodological standards for gathering information on specific topic within defined time periods.</p>
+<p>In the first assignment, we used Eurostat to extract datasets on gross domestic product (GDP) at current market prices by NUTS 3 regions, with the datacode: nama_10r_3gdp and population on 1 january by broard age group, sex and NUTS 3 region, with the datacode: demo_r_pjanaggr3. From these datasets, we collected data for Germany, Ireland, Croatia annd Switzerland covering the years 2000 to 2023.</p>
+<p>In the second assignment, we retrieved data from three additional datasets that could potentially influence regional inequality in 2017. These datasets included labour force by NUTS 2 region with the datacode: lfst_r_lfp2act, unemployment rate by Nuts 2 region with the data code: tgs00010, and population density by NUTS 2 region with the data code: tgs00024 . Each country collects its own data and reports it to Eurostat in accordance with ESA 2010, a global framework for national accounting. This ensures that the resulting statistics are consistent, reliable, and comparable across countries <span class="citation" data-cites="informat">(<a href="#ref-informat" role="doc-biblioref"><em>Information on Data - National Accounts - Eurostat</em>, n.d.</a>)</span>.</p>
+<p>However, the data also comes with certain limitations. For example, Switzerland is not en EU member but an EFTA country (European Free Trade Association), which promotes free trade and economic cooperation. Because Switzerland did not have a formal datasharing agreement with Eurostate before 2008, some data for earlier years or specific topics may be missing <span class="citation" data-cites="informat">(<a href="#ref-informat" role="doc-biblioref"><em>Information on Data - National Accounts - Eurostat</em>, n.d.</a>)</span>.</p>
+<p>Another limitation relates to confidentiality. Ireland, for instance, lacks GDP data for 2015-2017 in the Mid-West and South-West regions due to confidentiality restrictions imposed by Ireland’s Central Statistics Office. These restrictions are linked to changes in the national accounts in 2015 that significantly affected the measurement of Ireland’s productive capacity <span class="citation" data-cites="countyi2018">(<a href="#ref-countyi2018" role="doc-biblioref"><em>County Incomes and Regional GDP 2015 - CSO - Central Statistics Office</em>, 2018</a>)</span>.</p>
+<p>Some counters also choose to delay the publication of certain statistics to ensure accuracy. As a result, data for the most recent years of 2022 and 2023, may still be incomplete due to its unavailability.</p>
+<p>A common limitation across several datasets concerns changes in regional boundaries. Regions may merge to form larger areas or split into smaller units, affecting how data is collected, aggregated and updated. This issue is particularly relevant in Germany, where regional reforms occur more frequntly due to regional policy <span class="citation" data-cites="countyi2018">(<a href="#ref-countyi2018" role="doc-biblioref"><em>County Incomes and Regional GDP 2015 - CSO - Central Statistics Office</em>, 2018</a>)</span>. Coratia and Ireland face similar challenges, as changes to their NUTS regions have affected population data availability at the NUTS 3 level <span class="citation" data-cites="thenuts">(<a href="#ref-thenuts" role="doc-biblioref"><span>‘The NUTS Classification in Croatia’</span>, n.d.</a>)</span>.</p>
+<p>Finally, there were limitations related to the time coverage of the datasets. Allthought the assignments aimed to examine data from 2000 to 2023, the population density dataset for NUTS 2 regions only covers 2012-2023, and the unemployment rate dataset covers 2013-2023. Consequently, when including these variables, we were restricted to using data from 2013 to 2023 to maintain consistency across datasets.</p>
+</section>
+<section id="methodological-approach---kristoffer" class="level3">
+<h3 class="anchored" data-anchor-id="methodological-approach---kristoffer">Methodological approach - Kristoffer</h3>
+<section id="cross-sectional-estimation" class="level4">
+<h4 class="anchored" data-anchor-id="cross-sectional-estimation">Cross-Sectional Estimation</h4>
+<p>We first combined the Eurostat datasets covering GDP (in million euros) and population, , then calculated GDP per capita and Gini coefficients using a formula weighted by population, like <span class="citation" data-cites="lessmann2017">Lessmann &amp; Seidel (<a href="#ref-lessmann2017" role="doc-biblioref">2017</a>)</span>. We then visualized the calculated Gini coefficients for the different regions using different plots from ggplot2. In assignment 2, we made a cross-sectional analysis of the year 2017 using a regression model to test the effect of change in regional GDP per capita on regional inequality. We specified the following linear regression model: <span class="math display">\[
+\text{Gini}_{i,2017} = \alpha + \beta \, \Delta \text{GDPpc}_{i,2016 \to 2017} + u_i
+\]</span> Where:</p>
+<ul>
+<li><span class="math inline">\(\text{Gini}_{i,2017}\)</span> — Calculated Gini coefficient of region <em>i</em> in 2017 (regional GDP per capita inequality)<br>
+</li>
+<li><span class="math inline">\(\Delta \text{GDPpc}_{i,2016 \to 2017}\)</span> — percent change in GDP per capita from 2016 to 2017 in region <em>i</em><br>
+</li>
+<li><span class="math inline">\(\alpha\)</span> — intercept term (baseline inequality when GDP-per-capita change is zero)<br>
+</li>
+<li><span class="math inline">\(\beta\)</span> — slope coefficient showing how inequality changes with a one-percentage-point increase in GDP-per-capita growth<br>
+</li>
+<li><span class="math inline">\(u_i\)</span> — error term capturing unobserved regional factors</li>
+</ul>
+<p>We then experimented with other determinants of inequality by making a new OLS model with a set of new variables: population density (persons per square kilometer), unemployment rate and total workforce, also fetched from Eurostat. We specified the MLR as follows: <span class="math display">\[
+\text{Gini}_{i,2017} = \alpha + \beta_1\,\text{Workforce}_i + \beta_2\,\text{PopDensity}_i + \beta_3\,\text{Unemployment}_i + u_i\]</span></p>
+<p>where <span class="math inline">\(\alpha\)</span> is the intercept, <span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span>, and <span class="math inline">\(\beta_3\)</span> are the slope coefficients for each explanatory variable, and <span class="math inline">\(u_i\)</span> is the error term capturing unobserved factors affecting inequality.</p>
+</section>
+<section id="segmentation" class="level4">
+<h4 class="anchored" data-anchor-id="segmentation">Segmentation</h4>
+<p>We also segmented regions into categories to examine if the development–inequality relationship differed across different structural environments. Population density was split into “Rural”, “Medium Density”, and “High Density” using Eurostat-inspired breakpoints (0–300, 300–1500, 1500+). For workforce size, we used quantile-based grouping (Low, Medium, High). Unemployment rate was also split into Low-High segments, but here we set the breakpoints manually at 0%-5%, 5%-10% and 10+%. These subsets were used to run separate regressions for each group.</p>
+</section>
+<section id="panel-estimation" class="level4">
+<h4 class="anchored" data-anchor-id="panel-estimation">Panel Estimation</h4>
+<p>Finally, we estimated fixed-effects models using the full panel, applying plm() with region, country, year, and two-way effects. Before estimation, we converted the dataset into a pdata.frame and cleaned remaining NA/Inf values to avoid dropped regions. The panel models allowed us to control for all time-invariant regional characteristics, giving a “less noisy” picture of how regional GDP inequality changes inside regions over time.</p>
+</section>
+<section id="handling-of-na-values-and-heteroskedasticity" class="level4">
+<h4 class="anchored" data-anchor-id="handling-of-na-values-and-heteroskedasticity">Handling of NA-values and Heteroskedasticity</h4>
+<p>After joining the datasets onto eachother, including the new variables used for segmenting, we ended up with a few obvious gaps in our data and some NA/Inf rows. These were removed to keep the panel consistent, but a side effect of this is that we only have panel data from 2013 onwards.</p>
+<p>We also ran Breusch–Pagan tests to check for heteroskedasticity across all regressions. Where alternative functional forms were required, we introduced quadratic and logarithmic transformations of the key variables and evaluated their residual behaviour the same way.</p>
+</section>
+</section>
+</section>
+<section id="empirical-findings---harald" class="level2">
+<h2 class="anchored" data-anchor-id="empirical-findings---harald">Empirical Findings - Harald</h2>
+<section id="cross--sectional-estimates" class="level3">
+<h3 class="anchored" data-anchor-id="cross--sectional-estimates">Cross- sectional Estimates</h3>
+<p>In assignment 2, we began with a cross-sectional analysis examining the relationship between regional inequality and short-term ecnonmic development, measured as the change in GDP per capita from 2016 to 2017. The dependent variable in our model was regional inequality, measured by the Gini coefficent, and the independent variable was the change in GDP per capita: <span class="math display">\[
+\text{Gini}_{i,2017} = \alpha + \beta \, \Delta \text{GDPpc}_{i,2016 \to 2017} + u_i\]</span></p>
+<p>From the linear regression model we get the results:</p>
+<ul>
+<li>When change gdp per capita growth is zero, the regional inequality coefficient is estimated <span class="math inline">\(\hat{\alpha}=0.134\)</span>.</li>
+<li>Change in GDP per capita growth has a coefficient of <span class="math inline">\(\hat{\beta}=-0.002\)</span> (p=0.435), indicating it is not statistically significant.</li>
+<li>Overall, the model’s explanatory power is very low: <span class="math inline">\(R^2 = 0.012\)</span>, adjusted <span class="math inline">\(R^2 = -0.008\)</span>, and the F-test (F = 0.619, p = 0.435) suggests the model is not statistically significant.</li>
+</ul>
+<p>Thus, although the coefficient suggests a negative relationship, the effect is statistically insignificant and not substantively meaningful.</p>
+<p>We then went on to collect three more variables to determine whether they serve as strong predictor of regional inequality then GDP-per-capita growth. These variables were labour force, unemployment rate, and population density. After cleaning and tiding the data, we estimated a multiple regression model to analyse their cross-sectional relationship with inequality: <span class="math display">\[
+\text{Gini}_{i,2017} = \alpha + \beta_1\,\text{Workforce}_i + \beta_2\,\text{PopDensity}_i + \beta_3\,\text{Unemployment}_i + u_i\]</span></p>
+<p>Running the regression model gave us the following estimates:</p>
+<ul>
+<li>When all independent variables are zero, the regional inequality coefficient is estimated at <span class="math inline">\(\beta = 0.150\)</span> (p &lt; 0.001).</li>
+<li>Workforce has a coefficient of <span class="math inline">\(\beta = 0.000043\)</span> (p = 0.0216), statistically significant at the 5% level, indicating that regional inequality increases slightly as the labour force grows by one thousand workers.</li>
+<li>Population density (Pop_km²) has a coefficient of <span class="math inline">\(\beta = -0.000041\)</span> (p = 0.0083), statistically significant at the 1% level, suggesting that more densely populated regions tend to have lower inequality.</li>
+<li>Unemployment (Unemp_prct) has a coefficient of <span class="math inline">\(\beta = -0.0114\)</span> (p = 0.0613), marginally significant at the 10% level, indicating a weak negative relationship with inequality.</li>
+<li>Overall, the model’s explanatory power is moderate: <span class="math inline">\(R^2 = 0.283\)</span>, adjusted <span class="math inline">\(R^2 = 0.235\)</span>, and the F-test (F = 5.908, p = 0.0017) indicates the model is statistically significant. Structural variables such as workforce size and population density better capture regional economic differences than short-term GDP-per-capita growth.</li>
+</ul>
+</section>
+<section id="alternative-functional-forms-and-panel-estimates" class="level3">
+<h3 class="anchored" data-anchor-id="alternative-functional-forms-and-panel-estimates">Alternative functional forms and panel estimates</h3>
+<p>In this section, we explored alternative functional forms of the regression models using the variables from the second assignment workforce, population density, and unemployment rate to examine their effects on regional inequality, measured by the Gini coefficient. Specifically, we considered linear, logarithmic, and quadratic functional forms. While cubic specifications were also tested, they produced more estimates without providing meaningful improvements in explanatory power, so they were not pursued further.</p>
+<p>We constructed separate regression tables for each functional form linear, logarithmic, and quadraticand compared their performance in terms of coefficient significance, explanatory power, and overall model fit. Below, we summarize the key findings and interpret the effects of each independent variable.</p>
+<p>Workforce</p>
+<p>Linear model:</p>
+<ul>
+<li><p>When all independent variables are zero, the regional inequality coefficient is estimated at <span class="math inline">\(\beta = 0.1773\)</span>.</p></li>
+<li><p>Workforce has a coefficient of <span class="math inline">\(\beta = 0.000036\)</span> (p = 0.0665), which is marginally significant at the 10% level.</p></li>
+<li><p>Change in GDP per capita has a coefficient of <span class="math inline">\(\beta = -0.002122\)</span> (p = 0.4931), indicating it is not statistically significant.</p></li>
+<li><p>Overall, the model’s explanatory power is low: <span class="math inline">\(R^2 = 0.074\)</span>, adjusted <span class="math inline">\(R^2 = 0.035\)</span>, and the F-test (F = 1.877, p = 0.163) suggests the model is not statistically significant.</p></li>
+</ul>
+<p>Logarithmic model:</p>
+<ul>
+<li>Transforming change in GDP per capita using a log transformation improves model performance.</li>
+<li>When all independent variables are zero, the regional inequality coefficient is estimated at <span class="math inline">\(\beta = 0.0.2292\)</span>.</li>
+<li>The coefficient for GDP per capita becomes <span class="math inline">\(\beta = -0.059611\)</span> and is highly significant (p = 0.0008), showing a negative relationship with the Gini coefficient.</li>
+<li>Workforce remains largely unchanged at <span class="math inline">\(\beta = 0.000033\)</span> (p = 0.0604, marginally significant).</li>
+<li>Explanatory power improves: <span class="math inline">\(R^2 = 0.288\)</span>, adjusted <span class="math inline">\(R^2 = 0.0251\)</span>, and the F-test is highly significant (F = 8.078, p = 0.0011).</li>
+</ul>
+<p>Quadratic model:</p>
+<ul>
+<li>The quadratic specification produces less significant results than the logarithmic model.</li>
+<li>When all independent variables are zero, the regional inequality coefficient is estimated at <span class="math inline">\(\beta = 0.1379\)</span>.</li>
+<li>GDP per capita: linear term <span class="math inline">\(\beta = 0.004327\)</span> (p = 0.4066), quadratic term <span class="math inline">\(\beta = -0.000468\)</span> (p = 0.1302), both insignificant.</li>
+<li>Workforce: <span class="math inline">\(\beta = 0.000029\)</span> (p = 0.1480), effect is weak.</li>
+<li><span class="math inline">\(R^2 = 0.1194\)</span>, adjusted <span class="math inline">\(R^2 = 0.06199\)</span>, and the model is not statistically significant overall (p = 0.116).</li>
+</ul>
+<p>Summary: The logarithmic model best captures the relationship between workforce, GDP growth, and inequality, mainly due to the strong significance of log-transformed GDP per capita.</p>
+<ol start="2" type="1">
+<li>Population Density</li>
+</ol>
+<p>Linear model:</p>
+<ul>
+<li>When change in GDP per capita and population density are zero, the regional inequality coefficient is estimated at <span class="math inline">\(\beta = 0.1506\)</span>.</li>
+<li>Population density has a coefficient of <span class="math inline">\(\beta = -0.000037\)</span> with a p-value of 0.0228, indicating statistical significance at the 5% level.</li>
+<li>Change in GDP per capita has a coefficient of <span class="math inline">\(\beta = 0.000054\)</span> (p = 0.6166), which is not significant.</li>
+<li>Model performance is limited: <span class="math inline">\(R^2 = 0.111\)</span>, adjusted <span class="math inline">\(R^2 = 0.072\)</span>, and the F-test is 7.36 with a p-value of 0.00668, suggesting marginal overall significance.</li>
+</ul>
+<p>Logarithmic model:</p>
+<ul>
+<li>Applying a log transformation to change in GDP per capita improves model fit and significance.</li>
+<li>When change in GDP per capita and population density are zero, the regional inequality coefficient is estimated at <span class="math inline">\(\beta = 0.229228\)</span>.</li>
+<li>GDP per capita becomes <span class="math inline">\(\beta = -0.05793\)</span>, p = 0.0007, showing a strong negative relationship with inequality.</li>
+<li>Population density remains similar: <span class="math inline">\(\beta = -0.000039\)</span>, p = 0.0047, still significant.</li>
+<li>Overall explanatory power increases substantially: <span class="math inline">\(R^2 = 0.364\)</span>, adjusted <span class="math inline">\(R^2 = 0.331\)</span>, and the F-test p-value is 0.0001, indicating a highly significant model.</li>
+</ul>
+<p>Quadratic model:</p>
+<ul>
+<li>Including a quadratic term for GDP per capita allows for a non-linear relationship with inequality.</li>
+<li>When change in GDP per capita and population density are zero, the regional inequality coefficient is estimated at <span class="math inline">\(\beta = 0.137873\)</span>.</li>
+<li>GDP per capita: linear term <span class="math inline">\(\beta = 0.0077\)</span> (p = 0.1136, not significant), quadratic term <span class="math inline">\(\beta = -0.000682\)</span> (p = 0.0198, significant), indicating a slight non-linear effect.</li>
+<li>Population density: <span class="math inline">\(\beta = -0.000041\)</span>, p = 0.0091, remains significant.</li>
+<li>Model fit is moderate: <span class="math inline">\(R^2 = 0.213\)</span>, adjusted <span class="math inline">\(R^2 = 0.161\)</span>, with overall model p = 0.0123, showing statistical significance.</li>
+</ul>
+<p>Summary: The logarithmic model provides the best explanatory power for population density, with both GDP growth and population density showing significant impacts on regional inequality. The quadratic model captures a slight non-linear effect but has lower overall explanatory power.</p>
+<ol start="3" type="1">
+<li>Unemployment Rate</li>
+</ol>
+<p>Linear model:</p>
+<ul>
+<li>The regional inequality coefficient is <span class="math inline">\(\beta = 0.1758\)</span> when GDP per capita growth and unemployment are zero.</li>
+<li>Unemployment rate: <span class="math inline">\(\beta = -0.001039\)</span>, p = 0.03, statistically significant, suggesting higher unemployment is associated with slightly lower inequality.</li>
+<li>Change in GDP per capita: <span class="math inline">\(\beta = -0.0000248\)</span>, p = 0.936, not significant.</li>
+<li>Model fit is weak: <span class="math inline">\(R^2 = 0.10\)</span>, adjusted <span class="math inline">\(R^2 = 0.062\)</span>, and the F-test p-value is 0.083, indicating borderline overall significance.</li>
+</ul>
+<p>Logarithmic model:</p>
+<ul>
+<li>Transforming GDP per capita using a log improves model performance.</li>
+<li>The regional inequality coefficient is <span class="math inline">\(\beta = 0.233016\)</span> when GDP per capita growth and unemployment are zero.</li>
+<li>GDP per capita: <span class="math inline">\(\beta = -0.051\)</span>, p = 0.005, now highly significant with a negative effect on inequality.</li>
+<li>Unemployment rate: <span class="math inline">\(\beta = -0.00707\)</span>, p = 0.1096, not significant, though the effect remains negative.</li>
+<li>Explanatory power increases: <span class="math inline">\(R^2 = 0.27\)</span>, adjusted <span class="math inline">\(R^2 = 0.2336\)</span>, F-test p = 0.0018, highly significant overall.</li>
+</ul>
+<p>Quadratic model:</p>
+<ul>
+<li>Including a quadratic term for GDP per capita allows for a potential non-linear effect.</li>
+<li>The regional inequality coefficient is <span class="math inline">\(\beta = 0.160671\)</span> when GDP per capita growth and unemployment are zero.</li>
+<li>GDP per capita: linear term <span class="math inline">\(\beta = 0.0062\)</span> (p = 0.2114, not significant), quadratic term <span class="math inline">\(\beta = -0.000488\)</span> (p = 0.0102, borderline significant).</li>
+<li>Unemployment rate: <span class="math inline">\(\beta = -0.009216\)</span>, p = 0.0516, borderline significant.</li>
+<li>Model fit is lower than the log model: <span class="math inline">\(R^2 = 0.1517\)</span>, adjusted <span class="math inline">\(R^2 = 0.09633\)</span>, with F-test p = 0.0539, borderline significant overall.</li>
+</ul>
+<p>Summary: The logarithmic transformation of GDP per capita produces the strongest model for unemployment, improving both explanatory power and overall significance. Unemployment shows a weak but negative relationship with inequality, while quadratic effects of GDP per capita are borderline significant.</p>
+<p>Overall Conclusion for the alternative functional forms:</p>
+<p>Across all variables, logarithmic models generally provide the best explanatory power and statistical significance, particularly through the transformation of GDP per capita. Quadratic models capture some non-linear effects but often at the cost of reduced overall significance. Linear models are generally the weakest in explaining regional inequality. The key takeaway is that GDP per capita growth consistently shows a negative relationship with inequality when appropriately transformed, while workforce, population density, and unemployment rate exhibit more nuanced, context-dependent effects.</p>
+<p>The panel regression results reveal a consistently positive association between change in GDP per capita and the dependent variable across all specifications. The magnitude of the effect is small (0.00017–0.00024), but precision improves substantially when controlling for regional heterogeneity using NUTS2 fixed effects, as reflected in markedly lower standard errors and RMSE. Models with country only or year only fixed effects explain very little variation (R² = 0.005–0.009), whereas NUTS2 and NUTS2 &amp; Year fixed effects substantially improve model fit (R² = 0.102–0.109) and are preferred according to AIC and BIC. These findings highlight the importance of accounting for subnational regional characteristics, which capture significant variation in the outcome variable. Overall, the results suggest that regional-level factors are key drivers of the dependent variable, while the positive effect of change in GDP per capita remains robust across specifications.</p>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<section id="key-insights" class="level3">
+<h3 class="anchored" data-anchor-id="key-insights">Key insights</h3>
+<p>The initial model examining the effect of change in GDP per capita on regional inequality shows very weak explanatory capacity. The model’s F-test yields a p-value of 0.435, indicating that the relationship is statistically insignificant, and the multiple R² of 1.2% demonstrates that GDP per capita growth accounts for almost none of the variation in inequality. The estimated coefficient is negative (β = –0.002), but its magnitude is negligible, and it fails to reach significance. This suggests that short-term economic growth on its own does not meaningfully explain differences in regional inequality.</p>
+<p>When additional variables such as labour force, population density, and unemployment rate are included, the explanatory power improves substantially. The multiple R² increases to 0.2826, with an adjusted R² of 0.2357, indicating that these factors together account for 23–28% of the variation in regional inequality. Each predictor contributes differently: workforce is significant at the 5% level (p = 0.0216), population density at the 1% level (p = 0.0083), and unemployment is marginally significant at the 10% level (p = 0.0613). The coefficients indicate a small positive association for workforce (β = 0.000043), while population density (β = –0.000041) and unemployment (β = –0.0114) gives a negative relationships with inequality. These patterns suggest that regions with larger labour forces may experience slightly higher inequality, whereas denser regions tend to show lower inequality, and higher unemployment appears to compress income distribution. The estimated value of regional inequality (β = 0.150168) cannot be meaningfully interpreted, as no region can give a zero value for any of the three predictors.</p>
+<p>Exploring alternative functional forms provides insight into how workforce size, population density, and unemployment rate affect regional inequality, measured by the Gini coefficient.</p>
+<p>In the workforce models, the linear specification estimates the intercept at β = 0.1773, indicating the baseline level of inequality when all predictors are zero. Workforce has a small positive coefficient (β = 0.000036, p = 0.0665), marginally significant at the 10% level. This suggests that for every additional unit of workforce, such as an extra thousand workers, the regional Gini coefficient increases by 0.000036, representing a very slight rise in inequality. GDP per capita growth in the linear model is insignificant (β = –0.002122, p = 0.4931), and overall explanatory power is low (R² = 0.074, adjusted R² = 0.035; F = 1.877, p = 0.163).</p>
+<p>The logarithmic specification improves the model substantially. The intercept increases to β = 0.2292, and log-transformed GDP per capita becomes highly significant (β = –0.059611, p = 0.0008), indicating that proportional increases in GDP per capita are associated with reductions in inequality. Workforce remains marginally significant (β = 0.000033, p = 0.0604), implying that a one-unit increase still slightly raises inequality, but the effect is very small relative to the impact of GDP growth. Explanatory power rises to R² = 0.288, adjusted R² = 0.251, with an F-test of 8.078 (p = 0.0011). The quadratic model reduces significance: GDP linear (β = 0.004327, p = 0.4066) and quadratic terms (β = –0.000468, p = 0.1302) are insignificant, workforce becomes weaker (β = 0.000029, p = 0.1480), and overall model fit is low (R² = 0.1194, adjusted R² = 0.06199, p = 0.116).</p>
+<p>For population density, the linear model estimates the intercept at β = 0.1506, with population density negatively associated with inequality (β = –0.000037, p = 0.0228). A one-unit increase in population density (e.g., one person per square kilometer) decreases the Gini coefficient by 0.000037, indicating slightly lower inequality in denser regions. GDP per capita is insignificant (β = 0.000054, p = 0.6166), and model fit is modest (R² = 0.111, adjusted R² = 0.072; F = 7.36, p = 0.00668). The logarithmic model strengthens the relationships: intercept rises to β = 0.229228, log GDP per capita is highly significant and negative (β = –0.05793, p = 0.0007), and population density remains negative and significant (β = –0.000039, p = 0.0047). Explanatory power increases substantially (R² = 0.364, adjusted R² = 0.331, F-test p = 0.0001). The quadratic model introduces a significant squared GDP term (β = –0.000682, p = 0.0198) while the linear term is not significant (β = 0.0077, p = 0.1136), and population density remains negative (β = –0.000041, p = 0.0091). Model fit is moderate (R² = 0.213, adjusted R² = 0.161, p = 0.0123), showing some curvature but weaker explanatory power than the logarithmic specification.</p>
+<p>In the unemployment models, the linear specification estimates the intercept at β = 0.1758, with unemployment negatively associated with inequality (β = –0.001039, p = 0.03). A one-percentage-point increase in unemployment reduces the Gini coefficient by 0.001039, indicating a slight compression of inequality. GDP per capita remains insignificant (β = –0.0000248, p = 0.936), and model fit is low (R² = 0.10, adjusted R² = 0.062, F-test p = 0.083). The logarithmic model improves performance: intercept rises to β = 0.233016, log GDP per capita is significant and negative (β = –0.051, p = 0.005), and unemployment becomes insignificant (β = –0.00707, p = 0.1096). Model fit increases (R² = 0.27, adjusted R² = 0.2336, F-test p = 0.0018). The quadratic model shows borderline significance for unemployment (β = –0.009216, p = 0.0516) and the squared GDP term (β = –0.000488, p = 0.0102), with lower explanatory power (R² = 0.1517, adjusted R² = 0.09633, F-test p = 0.0539).</p>
+<p>Overall, these results show that a one-unit increase in workforce slightly raises inequality, higher population density slightly reduces inequality, and higher unemployment slightly reduces inequality, while log-transformed GDP per capita consistently reduces inequality across the models. The magnitude of the GDP effect is much larger than the other predictors, highlighting that proportional economic growth has a stronger association with regional inequality than the small incremental effects of workforce, population density, or unemployment.</p>
+<p>The panel regression results add further nuance. Across specifications, the estimated effect of change in GDP per capita is consistently positive, with coefficients ranging from 0.00017 to 0.00024, though these effects are small. The level of statistical precision improves markedly when regional heterogeneity is controlled using NUTS2 fixed effects. Models with only country or year fixed effects explain very little variation (R² = 0.005–0.009), while those incorporating NUTS2 fixed effects achieve considerably higher explanatory power (R² = 0.102–0.109) and lower RMSE. The improvements in information criteria (AIC and BIC) further indicate that regional characteristics play an important role in shaping inequality outcomes.</p>
+<p>Throughout these results, the differences in functional form, particularly the impact of logarithmic versus linear specifications demonstrate how sensitive the estimated relationships are to model structure. Transformations applied to GDP per capita growth consistently produce stronger, clearer relationships with inequality, while the effects of workforce size, population density, and unemployment vary considerably depending on the specification used.</p>
+</section>
+<section id="policy-implications" class="level3">
+<h3 class="anchored" data-anchor-id="policy-implications">Policy Implications</h3>
+<p>Across all the cross-sectional and panel models, the effect of GDP per capita growth on inequality is small, unstable, and mostly insignificant. For policymakers, this means that betting on regional inequality improvements through “more growth” alone would be a sub-optimal approach The differences between regions appear to be driven far more by long-term structural characteristics than by year-to-year economic performance.</p>
+<p>The segmentation exercises support this interpretation, although with a small asterisk attached. Regions with higher population density tend to show slightly lower inequality, while rural regions display more variation and, in some cases, higher inequality. This suggests that sparsely populated areas face structural disadvantages—smaller labour markets, fewer high-wage occupations, weaker public services—that growth alone cannot compensate for. At the same time, the way NUTS2-regions are defined (generally based on existing administrative divisions), makes it so that we cannot take this at face value. This division tends to separate city-regions into their own separate NUTS2-regions, meaning that the most densely populated areas also by definition have the least regional GDP inequality, seeing as they tend to only consist of one region, and thus come out with a calculated Gini of zero.</p>
+<p>Regions with larger labour forces tend to show wider internal GDP variation. This is consistent with regions that contain both highly productive sub-areas and weaker ones. Policymakers in these regions may need to invest specifically in connecting the smaller municipalities to the dominant “key region” through commuting infrastructure, business support, or coordinated urban planning.</p>
+<p>The unemployment segmentation reinforces the point that “low disparities” are not always a sign of strength. Regions with weaker economic activity often show very low internal differences simply because no municipality stands out as a strong performer. Policymakers should avoid interpreting these cases as success stories and instead view them as indicators of stagnation.</p>
+<p>Finally, the panel results show that once we control for each region’s structural characteristics, the effect of growth on internal disparities barely changes. The implication is: regional GDP inequality is mainly driven by long-term spatial and economic structures, not by short-term GDP growth. Effective policies therefore need to focus on durable place-based strategies—strengthening urban centres, improving connectivity, and reducing structural disadvantages—rather than relying on general growth policies to equalise development inside regions.</p>
+</section>
+</section>
+<section id="limitations-and-future-research---harald" class="level2">
+<h2 class="anchored" data-anchor-id="limitations-and-future-research---harald">Limitations and Future Research - Harald</h2>
+<p>Through the analyse of the datasets from the three assignments, several limitations emerged. These most be acknowledged when one shall interpreting the results. The first limitation and the most crucial one is the limited data across the different Eurostat datasets which we used. Some variables were not consistently reported for each country as mentioned. These missing values gave us Na in our coding and was challenging to form a fully comparable and comprehensive dataset. This also crated uncertainty regarding which variables were most suitable for capturing the specific characteristics of the countries included in the study.</p>
+<p>Another limitations is the knowledge of which variable would have the greatest influence on regional inequalities, and how they will shape the analysis. Without stronger evidence one variable impact, some assumptions had to be made when selecting and interpreting the data. Each countries followed a universe dictation on how to collect data for Eurostat, but how the methods would be interpreted and executed across each countries would further complicated comparisons, as each nation may decipher the definitions, or reporting practices differently. These inconsistencies can affect the reliability of cross-country analyses.</p>
+<p>By gaining a deeper insight into the context of each country we have been given and how they processes their collected data, we would have a stronger interpretation of our results from the analyse. For a more accuracy and improved analyse of regional dynamics, a more in-depth understanding of data practices and how these variables affects the countries would likely improve the workflow and understanding of the results. This could help with future analyses and enhance the ability to explain the variations in regional inequalities.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">Summary</h3>
+<p>Across all assignments, the core finding is straightforward: short-term GDP per capita growth does not explain much of the internal GDP spread within NUTS2 regions. The initial cross-sectional models showed almost no relationship between growth and inequality. Once we introduced workforce size, population density, and unemployment, the models improved, but the effects were still small and varied across specifications. Density consistently pointed toward slightly lower inequality, while larger workforces tended to be linked with slightly higher inequality. Unemployment effects were weak and context dependent.</p>
+<p>The alternative functional forms reinforced this picture. Log-transforming GDP per capita produced the clearest and most stable relationships, but even then, the general message stayed the same: proportional growth has some association with inequality, but the effect is limited. Quadratic models captured small non-linearities but did not change the overall interpretation.</p>
+<p>The panel models helped settle the question. Once we control for regional characteristics with fixed effects, most of the variation in inequality is tied to long-lasting structural factors inside each region, not year-to-year economic performance. Growth barely shifts the needle. NUTS2 fixed effects improved the model fit dramatically, which shows how important these structural differences are.</p>
+</section>
+<section id="final-reflection" class="level3">
+<h3 class="anchored" data-anchor-id="final-reflection">Final Reflection</h3>
+<p>What this means is that internal regional inequality is not a simple function of annual economic growth. Like Newton said: “an object in motion, stays in motion.” The same goes here: the regions that start out unequal tend to stay unequal, regardless of short-term swings in GDP per capita. Regions with structural disadvantages, especially rural or low-density areas, carry these disadvantages from year to year. Growth helps, but it does not rebalance a region on its own. The implication for future research is clear: to understand why some regions have wide internal GDP spreads, we need richer variables that capture long-term spatial, institutional, and historical differences, not just economic snapshots.</p>
+</section>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+</section>
+<section id="appendix" class="level2 unnumbered">
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Appendix</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-countyi2018" class="csl-entry" role="listitem">
+<em>County incomes and regional GDP 2015 - CSO - central statistics office</em>. (2018). CSO. <a href="https://www.cso.ie/en/releasesandpublications/er/cirgdp/countyincomesandregionalgdp2015/">https://www.cso.ie/en/releasesandpublications/er/cirgdp/countyincomesandregionalgdp2015/</a>
+</div>
+<div id="ref-informat" class="csl-entry" role="listitem">
+<em>Information on data - national accounts - eurostat</em>. (n.d.). <a href="https://ec.europa.eu/eurostat/web/national-accounts/information-data">https://ec.europa.eu/eurostat/web/national-accounts/information-data</a>
+</div>
+<div id="ref-lessmann2017" class="csl-entry" role="listitem">
+Lessmann, C., &amp; Seidel, A. (2017). Regional inequality, convergence, and its determinants – a view from outer space. <em>European Economic Review</em>, <em>92</em>, 110–132. <a href="https://doi.org/10.1016/j.euroecorev.2016.11.009">https://doi.org/10.1016/j.euroecorev.2016.11.009</a>
+</div>
+<div id="ref-thenuts" class="csl-entry" role="listitem">
+The NUTS classification in croatia. (n.d.). In <em>dzs.gov.hr</em>. <a href="https://dzs.gov.hr/highlighted-themes/prostorne-klasifikacije-i-subnacionalne-statistike-2-694/the-nuts-classification-in-croatia/699">https://dzs.gov.hr/highlighted-themes/prostorne-klasifikacije-i-subnacionalne-statistike-2-694/the-nuts-classification-in-croatia/699</a>
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

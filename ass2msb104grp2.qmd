@@ -1,7 +1,7 @@
 ---
 title: "Assignment 2:"
 subtitle:  "Regional GDP Inequality in 4 Selected European Economies - Exploring Determinants"
-author: "Kristoffer Tufta and Harald Vika"
+author: "Kristoffer Tufta and Harald Bjarne Vika"
 date: last-modified
 date-format: "dddd D MMM, YYYY"
 csl: apa7.csl
@@ -41,9 +41,7 @@ library(lmtest)
 
 ```
 
-
 # Part A: Growth and Inequality
-
 
 In this assignment we build on the foundation we made in assignment 1.
 Using the calculated regional inequality and gdp per capita, we estimate a simple cross-sectional Ordinary Least Squares (OLS) regression for the year 2017 in our selected countries, broken down by NUTS2-region.
@@ -69,7 +67,7 @@ Since 2015 has been filtered away, we see some NA-values in all the rows showing
 
 ```{r}
 #Getting data from Tidyjoined (GDP, Poupulation), summing by Nuts2. 
-GDPChange <- readRDS("./Data/Tidyjoined.rds") %>%
+NUTSUM <- readRDS("./Data/Tidyjoined.rds") %>%
   select(NUTS2, Country, Time, `GDP Million EUR`, Population) %>%
   group_by(NUTS2, Country, Time) %>%
   summarise(
@@ -80,11 +78,11 @@ GDPChange <- readRDS("./Data/Tidyjoined.rds") %>%
 write_rds("./data/TidyNUTS2.rds")
 ```
 
-
 ```{r}
 #Filtering by year 2016/2017 and mutating column for change in GDP.
-GDPChange %>%
+GDPChange <- NUTSUM %>%
   filter(Time > "2015" & Time < "2018")%>%
+  group_by(NUTS2) %>%
 mutate(
     lagged_capita = dplyr::lag(N2GDPCAP),
     chg_gdpc = (N2GDPCAP - lagged_capita)/lagged_capita,
@@ -136,7 +134,8 @@ summary(lm(gini ~ chg_gdpc, data = ineqgdpcjoined)
 as_flextable(
 lm(gini ~ chg_gdpc, data = ineqgdpcjoined),
 title = "OLS regression of inequality on GDP per capita growth, 2017"
-)
+)%>%
+saveRDS("./data/Regdev-Gini.rds")
 ```
 
 ### Model Diagnostics
@@ -295,8 +294,7 @@ tidyjoined2 <- tidyjoined2 %>%
     write_rds("./data/tidyjoined2.rds")
 as_flextable(tidyjoined2)
 
-```  
-
+```
 
 ## Multiple Regression Model
 
@@ -319,9 +317,13 @@ saveRDS(ineqgdpcjoined2, "./data/Gini_EUdata_Full.rds")
 ```{r}
 #| label: tbl-MLR
 #| fig-cap: "Multiple Regression - Regional GDP Inequality as a function of labour, unemploment and population density."
+# Vart litt tull her. Fikk ikkje til å både printe og skrive til RDS (treng tabellen i ass.4)
 as_flextable (lm(gini ~ Workforce + Pop_km2 + Unemp_prct, data = filter(ineqgdpcjoined2, Time > "2015" & Time < "2018") 
 ))%>%
-  colformat_double(j = 2, digits = 6)
+  colformat_double(j = 2, digits = 6)%>%
+  saveRDS("./data/tbl-MLR-All.rds")
+  read_rds("./data/tbl-MLR-All.rds")
+
 ```
 
 ## Interpreting our results
