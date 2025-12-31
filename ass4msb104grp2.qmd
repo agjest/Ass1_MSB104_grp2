@@ -5,6 +5,7 @@ author: "Kristoffer Tufta and Harald Bjarne Vika"
 date: last-modified
 date-format: "dddd D MMM, YYYY"
 csl: apa7.csl
+citeproc: true
 lang: en-GB
 format:
   html: default

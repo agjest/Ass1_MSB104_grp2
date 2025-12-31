@@ -1,0 +1,21 @@
+---
+title: "ag comments ass. 4"
+format: html
+---
+
+## Kommentarer
+
+-   La `citeproc: true` til i YAML for å få `typst`til å kjøre
+-   Velskrevet i kjent KI stil ;-)
+-   Jeg savener at dere presenterer modellene i en samlet regresjonstabell vha. `modelsummary()`. 
+-   Når det gjelder cross-section modellene for 2017 er det fremdels uklart for meg om dere har med vekst (% endring i gdp per capita) i modellen som inneholder de ekstra forklaringsvariablene.
+-   Dere snakker om «segmentation» som jeg oppfatter som at dere har laget faktor-variabler av de tre forklaringsvaribalene. Trolig et godt valg.
+-   Vanskelig å få grep på estimatene og tolkningen av estimatene for disse kategorivariablene.
+-   En mulig modell ville være å ha en interaksjon mellom befolkningstetthet og vekst, slik at vekst kan ha ulik koeffisient for de tre nivåene på befolkningstetthet.
+-   Uklart for meg om dere benytter en log-log eller en level-log modell. Tolkningen av koeffisientene i log modellen synes jeg er litt skuffende. Dette har vi gått igjennom i detalj i forelesningene. Stol litt mer på egne ferdigheter.
+-   Det virker som dere argumentrer for at log-modellen er bedre pga. høyere R^2. dette er en feilslutning. Modeller kan ikke sammenlignes utfra R^2 når vi har benyttet transformasjoner.
+-   Fremdeles litt uklart for meg hvilken effekt dere mener GDP per capita / endring i GDP per capita har på regional utgjevning. Noen ganger har det liten/ingen effekt og så har det stor effekt.
+-   Det er alltid litt å plukke på, men alt i alt synes jeg dere har kommet bra ifra det.
+
+
+
